@@ -2,6 +2,7 @@ package com.vibe.vuties.item;
 
 import com.vibe.vuties.client.RotorpackClientExtensions;
 import com.vibe.vuties.client.RotorpackGeoRenderer;
+import com.vibe.vuties.client.RotorpackItemRenderer;
 import com.vibe.vuties.init.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
@@ -106,10 +107,6 @@ public class RotorpackItem extends ArmorItem implements GeoItem {
         boolean engine = isEngineEnabled(stack);
         boolean hover = isHoverMode(stack);
 
-        // Описание тира
-        tooltip.add(Component.translatable("tooltip.vuties.rotorpack.desc.mk" + this.tier.getLevel())
-                .withStyle(ChatFormatting.GRAY));
-
         // Статус двигателя
         tooltip.add(Component.translatable("tooltip.vuties.rotorpack.engine",
                 engine ? Component.translatable("tooltip.vuties.status.on").withStyle(ChatFormatting.GREEN)
@@ -182,14 +179,23 @@ public class RotorpackItem extends ArmorItem implements GeoItem {
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
         consumer.accept(new GeoRenderProvider() {
-            private RotorpackGeoRenderer renderer;
+            private RotorpackGeoRenderer armorRenderer;
+            private RotorpackItemRenderer itemRenderer;
 
             @Override
             public <T extends LivingEntity> net.minecraft.client.model.HumanoidModel<?> getGeoArmorRenderer(@Nullable T livingEntity, ItemStack itemStack, @Nullable EquipmentSlot equipmentSlot, @Nullable net.minecraft.client.model.HumanoidModel<T> original) {
-                if (this.renderer == null) {
-                    this.renderer = new RotorpackGeoRenderer();
+                if (this.armorRenderer == null) {
+                    this.armorRenderer = new RotorpackGeoRenderer();
                 }
-                return this.renderer;
+                return this.armorRenderer;
+            }
+
+            @Override
+            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+                if (this.itemRenderer == null) {
+                    this.itemRenderer = new RotorpackItemRenderer();
+                }
+                return this.itemRenderer;
             }
         });
     }
@@ -199,4 +205,3 @@ public class RotorpackItem extends ArmorItem implements GeoItem {
         consumer.accept(RotorpackClientExtensions.INSTANCE);
     }
 }
-
