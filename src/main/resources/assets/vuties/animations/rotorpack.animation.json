@@ -1,0 +1,96 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.rotorpack.idle": {
+      "loop": true,
+      "bones": {
+        "left_wing": {
+          "rotation": [0, 0, -68.75]
+        },
+        "right_wing": {
+          "rotation": [0, 0, 68.75]
+        }
+      }
+    },
+    "animation.rotorpack.spin": {
+      "loop": true,
+      "animation_length": 0.2,
+      "bones": {
+        "left_rotor": {
+          "rotation": {
+            "0.0": [0, 0, 0],
+            "0.1": [0, 180, 0],
+            "0.2": [0, 360, 0]
+          }
+        },
+        "right_rotor": {
+          "rotation": {
+            "0.0": [0, 0, 0],
+            "0.1": [0, -180, 0],
+            "0.2": [0, -360, 0]
+          }
+        }
+      }
+    },
+    "animation.rotorpack.fly": {
+      "loop": true,
+      "animation_length": 0.2,
+      "bones": {
+        "left_rotor": {
+          "rotation": {
+            "0.0": [0, 0, 0],
+            "0.1": [0, 180, 0],
+            "0.2": [0, 360, 0]
+          }
+        },
+        "right_rotor": {
+          "rotation": {
+            "0.0": [0, 0, 0],
+            "0.1": [0, -180, 0],
+            "0.2": [0, -360, 0]
+          }
+        },
+        "left_wing": {
+          "rotation": [0, 0, 0]
+        },
+        "right_wing": {
+          "rotation": [0, 0, 0]
+        }
+      }
+    },
+    "animation.rotorpack.deploy_wings": {
+      "animation_length": 0.5,
+      "bones": {
+        "left_wing": {
+          "rotation": {
+            "0.0": [0, 0, -68.75],
+            "0.5": [0, 0, 0]
+          }
+        },
+        "right_wing": {
+          "rotation": {
+            "0.0": [0, 0, 68.75],
+            "0.5": [0, 0, 0]
+          }
+        }
+      }
+    },
+    "animation.rotorpack.retract_wings": {
+      "animation_length": 0.5,
+      "bones": {
+        "left_wing": {
+          "rotation": {
+            "0.0": [0, 0, 0],
+            "0.5": [0, 0, -68.75]
+          }
+        },
+        "right_wing": {
+          "rotation": {
+            "0.0": [0, 0, 0],
+            "0.5": [0, 0, 68.75]
+          }
+        }
+      }
+    }
+  }
+}
