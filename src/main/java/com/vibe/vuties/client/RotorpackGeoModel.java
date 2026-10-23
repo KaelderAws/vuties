@@ -9,6 +9,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 public class RotorpackGeoModel extends GeoModel<RotorpackItem> {
     private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "geo/rotorpack.geo.json");
     private static final ResourceLocation ANIMATIONS = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "animations/rotorpack.animation.json");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "textures/models/armor/rotorpack_layer_1.png");
 
     @Override
     public ResourceLocation getModelResource(RotorpackItem animatable) {
@@ -22,13 +23,12 @@ public class RotorpackGeoModel extends GeoModel<RotorpackItem> {
 
     @Override
     public ResourceLocation getTextureResource(RotorpackItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Vuties.MODID,
-            "textures/models/armor/rotorpack_mk" + animatable.getTier().getLevel() + "_layer_1.png");
+        return TEXTURE;
     }
 
     @Override
     public ResourceLocation getTextureResource(RotorpackItem animatable, GeoRenderer<RotorpackItem> renderer) {
-        return getTextureResource(animatable);
+        return TEXTURE;
     }
 
     @Override

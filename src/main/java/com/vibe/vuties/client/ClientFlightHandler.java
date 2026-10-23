@@ -11,8 +11,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -63,7 +61,7 @@ public class ClientFlightHandler {
 
         // Если на игроке НЕ надет наш ранец - немедленно выходим! Ванильные элитры не трогаем.
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (!(chest.getItem() instanceof RotorpackItem rotorpack)) {
+        if (!(chest.getItem() instanceof RotorpackItem)) {
             targetPitchTilt = 0.0f;
             currentPitchTilt = 0.0f;
             targetRollTilt = 0.0f;
@@ -74,22 +72,24 @@ public class ClientFlightHandler {
             return;
         }
 
-        // Все звуки полёта ранца заглушены через событие PlaySoundEvent, не трогая SoundManager каждый тик
-
         if (elytraCooldown > 0) {
             elytraCooldown--;
         }
 
         // Переключение тумблеров (двигатель / зависание)
         while (ModKeyMappings.TOGGLE_ENGINE.consumeClick()) {
+            RotorpackItem.setEngineEnabled(chest, !RotorpackItem.isEngineEnabled(chest));
             PacketDistributor.sendToServer(new RotorpackTogglePayload(0));
         }
         while (ModKeyMappings.TOGGLE_HOVER.consumeClick()) {
+            if (RotorpackItem.hasHoverUpgrade(chest)) {
+                RotorpackItem.setHoverMode(chest, !RotorpackItem.isHoverMode(chest));
+            }
             PacketDistributor.sendToServer(new RotorpackTogglePayload(1));
         }
 
         boolean engine = RotorpackItem.isEngineEnabled(chest);
-        boolean hover = rotorpack.getTier().canHover() && RotorpackItem.isHoverMode(chest);
+        boolean hover = RotorpackItem.hasHoverUpgrade(chest) && RotorpackItem.isHoverMode(chest);
 
         boolean jump = mc.options.keyJump.isDown();
         boolean sneak = mc.options.keyShift.isDown();
@@ -105,7 +105,7 @@ public class ClientFlightHandler {
         prevWingProgress = currentWingProgress;
         prevRotorAngle = rotorAngle;
 
-        boolean wingsDeploy = rotorpack.getTier().hasWings() && engine && (player.isFallFlying() || sprint) && !player.onGround();
+        boolean wingsDeploy = RotorpackItem.hasWingsUpgrade(chest) && engine && (player.isFallFlying() || sprint) && !player.onGround();
         float targetWing = wingsDeploy ? 1.0f : 0.0f;
         currentWingProgress = Mth.approach(currentWingProgress, targetWing, 0.09f);
 
@@ -137,9 +137,9 @@ public class ClientFlightHandler {
         }
 
         // -------------------------------------------------------------
-        // РЕЖИМ 1: КРЫЛЬЯ / ЭЛИТРЫ ПРИ ЗАЖАТИИ CTRL (ПОСТОЯННАЯ ТЯГА) - СТРОГО ДЛЯ Mk III
+        // РЕЖИМ 1: КРЫЛЬЯ / ЭЛИТРЫ ПРИ ЗАЖАТИИ CTRL (ПОСТОЯННАЯ ТЯГА) - ТРЕБУЕТСЯ МОДУЛЬ КРЫЛЬЕВ
         // -------------------------------------------------------------
-        if (rotorpack.getTier().hasWings()) {
+        if (RotorpackItem.hasWingsUpgrade(chest)) {
             if (sprint && !player.onGround() && !player.isFallFlying() && elytraCooldown == 0) {
                 elytraCooldown = 6;
                 player.startFallFlying();
@@ -171,7 +171,7 @@ public class ClientFlightHandler {
                 return;
             }
         } else {
-            // Mk I и Mk II не имеют крыльев - немедленно выключаем элитры, если игра попыталась их включить
+            // Без модуля крыльев - немедленно выключаем элитры, если игра попыталась их включить
             if (player.isFallFlying()) {
                 player.stopFallFlying();
             }
@@ -291,8 +291,6 @@ public class ClientFlightHandler {
             spawnDownwashParticles(player);
         }
 
-        // Все звуки полёта вырезаны по запросу пользователя: абсолютная тишина и плавность
-
         if (jump || sneak || moveLen > 0.001) {
             PacketDistributor.sendToServer(new RotorpackInputPayload(jump, sneak, moveLen > 0.001, sprint));
         }
@@ -372,4 +370,3 @@ public class ClientFlightHandler {
         }
     }
 }
-

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "vuties:block/upgrade_table_side",
+    "down": "vuties:block/upgrade_table_bottom",
+    "up": "vuties:block/upgrade_table_top",
+    "north": "vuties:block/upgrade_table_side",
+    "south": "vuties:block/upgrade_table_side",
+    "east": "vuties:block/upgrade_table_side",
+    "west": "vuties:block/upgrade_table_side"
+  }
+}

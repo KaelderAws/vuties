@@ -1,11 +1,7 @@
 package com.vibe.vuties.network;
 
 import com.vibe.vuties.item.RotorpackItem;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,12 +33,12 @@ public class ModNetwork {
             if (player == null) return;
 
             ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-            if (chest.getItem() instanceof RotorpackItem rotorpack && RotorpackItem.isEngineEnabled(chest)) {
+            if (chest.getItem() instanceof RotorpackItem && RotorpackItem.isEngineEnabled(chest)) {
                 // Keep fall distance at zero during active flight or hover
                 player.resetFallDistance();
 
-                // Синхронизация режима полёта на элитрах (крыльях) - СТРОГО ТОЛЬКО ДЛЯ Mk III
-                if (rotorpack.getTier().hasWings()) {
+                // Синхронизация режима полёта на элитрах (крыльях) - требуется модуль крыльев
+                if (RotorpackItem.hasWingsUpgrade(chest)) {
                     if (payload.sprinting() && !player.onGround()) {
                         if (!player.isFallFlying()) {
                             player.startFallFlying();
@@ -51,7 +47,6 @@ public class ModNetwork {
                         player.stopFallFlying();
                     }
                 } else {
-                    // Mk I и Mk II категорически не имеют доступа к элитрам
                     if (player.isFallFlying()) {
                         player.stopFallFlying();
                     }
@@ -66,7 +61,7 @@ public class ModNetwork {
             if (player == null) return;
 
             ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-            if (chest.getItem() instanceof RotorpackItem rotorpack) {
+            if (chest.getItem() instanceof RotorpackItem) {
                 if (payload.action() == 0) {
                     boolean next = !RotorpackItem.isEngineEnabled(chest);
                     RotorpackItem.setEngineEnabled(chest, next);
@@ -75,7 +70,7 @@ public class ModNetwork {
                         true
                     );
                 } else if (payload.action() == 1) {
-                    if (!rotorpack.getTier().canHover()) {
+                    if (!RotorpackItem.hasHoverUpgrade(chest)) {
                         player.displayClientMessage(
                             Component.translatable("message.vuties.hover_unavailable"),
                             true

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
@@ -16,7 +17,12 @@ public class RotorpackGeoRenderer extends GeoArmorRenderer<RotorpackItem> {
     public void preRender(PoseStack poseStack, RotorpackItem animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
         super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
 
-        boolean hasWings = animatable.getTier().hasWings();
+        // Наплечники ранца (броня на плечах) гарантированно видимы на персонаже
+        getGeoModel().getBone("armorRightArm").ifPresent(b -> b.setHidden(false));
+        getGeoModel().getBone("armorLeftArm").ifPresent(b -> b.setHidden(false));
+
+        ItemStack stack = getCurrentStack();
+        boolean hasWings = stack != null && RotorpackItem.hasWingsUpgrade(stack);
         getGeoModel().getBone("left_wing").ifPresent(b -> b.setHidden(!hasWings));
         getGeoModel().getBone("right_wing").ifPresent(b -> b.setHidden(!hasWings));
     }

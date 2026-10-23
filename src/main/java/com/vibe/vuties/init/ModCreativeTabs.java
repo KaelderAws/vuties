@@ -16,12 +16,16 @@ public class ModCreativeTabs {
         CREATIVE_MODE_TABS.register("vuties_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.vuties"))
             .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> ModItems.ROTORPACK_MK1.get().getDefaultInstance())
+            .icon(() -> ModItems.ROTORPACK.get().getDefaultInstance())
             .displayItems((params, output) -> {
-                output.accept(ModItems.ROTORPACK_MK1.get());
-                output.accept(ModItems.ROTORPACK_MK2.get());
-                output.accept(ModItems.ROTORPACK_MK3.get());
+                output.accept(ModItems.ROTORPACK.get());
                 output.accept(ModItems.PROPELLER.get());
+                output.accept(ModItems.UPGRADE_TABLE.get());
+                output.accept(ModItems.HOVER_UPGRADE.get());
+                output.accept(ModItems.WINGS_UPGRADE.get());
+                output.accept(ModItems.IRON_ARMOR_UPGRADE.get());
+                output.accept(ModItems.DIAMOND_ARMOR_UPGRADE.get());
+                output.accept(ModItems.NETHERITE_ARMOR_UPGRADE.get());
             })
             .build());
 }

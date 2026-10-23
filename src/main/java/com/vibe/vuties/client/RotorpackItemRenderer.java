@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
@@ -20,13 +21,12 @@ public class RotorpackItemRenderer extends GeoItemRenderer<RotorpackItem> {
         // Center the rotorpack model so rotations and scaling in GUI/hand occur around its center
         poseStack.translate(0, -1.05f, -0.2f);
 
-        // Hide armor-specific humanoid parts (shoulders, head) for standalone item view
-        getGeoModel().getBone("armorRightArm").ifPresent(b -> b.setHidden(true));
-        getGeoModel().getBone("armorLeftArm").ifPresent(b -> b.setHidden(true));
-        getGeoModel().getBone("armorHead").ifPresent(b -> b.setHidden(true));
+        // Наплечники ранца (броня на плечах) видимы как часть конструкции
+        getGeoModel().getBone("armorRightArm").ifPresent(b -> b.setHidden(false));
+        getGeoModel().getBone("armorLeftArm").ifPresent(b -> b.setHidden(false));
 
-        // Hide wings on Mk I and Mk II, display on Mk III
-        boolean hasWings = animatable.getTier().hasWings();
+        ItemStack stack = getCurrentItemStack();
+        boolean hasWings = stack != null && RotorpackItem.hasWingsUpgrade(stack);
         getGeoModel().getBone("left_wing").ifPresent(b -> b.setHidden(!hasWings));
         getGeoModel().getBone("right_wing").ifPresent(b -> b.setHidden(!hasWings));
     }
