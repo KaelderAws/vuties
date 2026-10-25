@@ -3,16 +3,20 @@ package com.vibe.vuties.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.vibe.vuties.Vuties;
+import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.RotorpackItem;
+import com.vibe.vuties.network.HelmetTogglePayload;
 import com.vibe.vuties.network.RotorpackInputPayload;
 import com.vibe.vuties.network.RotorpackTogglePayload;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -20,6 +24,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -58,6 +63,15 @@ public class ClientFlightHandler {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player == null || player.isSpectator()) return;
+
+        // Переключение забрала / маски шлема
+        while (ModKeyMappings.TOGGLE_HELMET.consumeClick()) {
+            ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+            if (head.getItem() instanceof AceHelmetItem) {
+                AceHelmetItem.setHelmetOpen(head, !AceHelmetItem.isHelmetOpen(head));
+                PacketDistributor.sendToServer(new HelmetTogglePayload());
+            }
+        }
 
         // Если на игроке НЕ надет наш ранец - немедленно выходим! Ванильные элитры не трогаем.
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
@@ -325,9 +339,24 @@ public class ClientFlightHandler {
     }
 
     @SubscribeEvent
+    public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
+        LivingEntity entity = event.getEntity();
+        if (entity != null && entity.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof AceHelmetItem) {
+            if (event.getRenderer().getModel() instanceof HumanoidModel<?> humanoidModel) {
+                humanoidModel.hat.visible = false;
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
         if (player == null || player.isSpectator()) return;
+
+        ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+        if (head.getItem() instanceof AceHelmetItem) {
+            event.getRenderer().getModel().hat.visible = false;
+        }
 
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
         if (!(chest.getItem() instanceof RotorpackItem) || !RotorpackItem.isEngineEnabled(chest)) {

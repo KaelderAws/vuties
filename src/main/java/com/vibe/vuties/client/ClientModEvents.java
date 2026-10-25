@@ -15,6 +15,7 @@ public class ClientModEvents {
     public static void registerKeys(RegisterKeyMappingsEvent event) {
         event.register(ModKeyMappings.TOGGLE_ENGINE);
         event.register(ModKeyMappings.TOGGLE_HOVER);
+        event.register(ModKeyMappings.TOGGLE_HELMET);
     }
 
     @SubscribeEvent

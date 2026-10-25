@@ -1,6 +1,7 @@
 package com.vibe.vuties.init;
 
 import com.vibe.vuties.Vuties;
+import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.item.UpgradeItem;
 import net.minecraft.world.item.BlockItem;
@@ -14,6 +15,10 @@ public class ModItems {
     // Single Rotorpack (without any MK tiers)
     public static final DeferredItem<RotorpackItem> ROTORPACK = ITEMS.registerItem("rotorpack",
         p -> new RotorpackItem(p));
+
+    // Ace Helmet
+    public static final DeferredItem<AceHelmetItem> ACE_HELMET = ITEMS.registerItem("ace_helmet",
+        AceHelmetItem::new);
 
     // Propeller material
     public static final DeferredItem<Item> PROPELLER = ITEMS.registerItem("propeller",

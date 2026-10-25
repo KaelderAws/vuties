@@ -28,3 +28,4 @@ scratch
 
 # vscode
 .vscode
+*.bbmodel

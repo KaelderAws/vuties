@@ -21,4 +21,12 @@ public class ModKeyMappings {
         GLFW.GLFW_KEY_H,
         "key.categories.vuties"
     );
+
+    public static final KeyMapping TOGGLE_HELMET = new KeyMapping(
+        "key.vuties.helmet_toggle",
+        KeyConflictContext.IN_GAME,
+        InputConstants.Type.KEYSYM,
+        GLFW.GLFW_KEY_X,
+        "key.categories.vuties"
+    );
 }

@@ -18,6 +18,7 @@ public class ModCreativeTabs {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> ModItems.ROTORPACK.get().getDefaultInstance())
             .displayItems((params, output) -> {
+                output.accept(ModItems.ACE_HELMET.get());
                 output.accept(ModItems.ROTORPACK.get());
                 output.accept(ModItems.PROPELLER.get());
                 output.accept(ModItems.UPGRADE_TABLE.get());

@@ -1,5 +1,6 @@
 package com.vibe.vuties.network;
 
+import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -24,6 +25,12 @@ public class ModNetwork {
             RotorpackTogglePayload.TYPE,
             RotorpackTogglePayload.STREAM_CODEC,
             ModNetwork::handleToggle
+        );
+
+        registrar.playToServer(
+            HelmetTogglePayload.TYPE,
+            HelmetTogglePayload.STREAM_CODEC,
+            ModNetwork::handleHelmetToggle
         );
     }
 
@@ -84,6 +91,23 @@ public class ModNetwork {
                         );
                     }
                 }
+            }
+        });
+    }
+
+    public static void handleHelmetToggle(HelmetTogglePayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player == null) return;
+
+            ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+            if (head.getItem() instanceof AceHelmetItem) {
+                boolean next = !AceHelmetItem.isHelmetOpen(head);
+                AceHelmetItem.setHelmetOpen(head, next);
+                player.displayClientMessage(
+                    Component.translatable(next ? "message.vuties.helmet_open" : "message.vuties.helmet_closed"),
+                    true
+                );
             }
         });
     }

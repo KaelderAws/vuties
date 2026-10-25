@@ -1,0 +1,255 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.ace_helmet.closed": {
+      "loop": true,
+      "bones": {
+        "visor": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "mask_right": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "mask_left": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    "animation.ace_helmet.open": {
+      "loop": true,
+      "bones": {
+        "visor": {
+          "position": [
+            0,
+            3.6,
+            0.1
+          ],
+          "scale": [
+            1,
+            0.05,
+            1
+          ]
+        },
+        "mask_right": {
+          "position": [
+            -2.2,
+            0,
+            0.91
+          ],
+          "scale": [
+            0.5,
+            1,
+            0.5
+          ]
+        },
+        "mask_left": {
+          "position": [
+            2.2,
+            0,
+            0.91
+          ],
+          "scale": [
+            0.5,
+            1,
+            0.5
+          ]
+        }
+      }
+    },
+    "animation.ace_helmet.opening": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.35,
+      "bones": {
+        "visor": {
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.35": [
+              0,
+              3.6,
+              0.1
+            ]
+          },
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.35": [
+              1,
+              0.05,
+              1
+            ]
+          }
+        },
+        "mask_right": {
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.35": [
+              -2.2,
+              0,
+              0.91
+            ]
+          },
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.35": [
+              0.5,
+              1,
+              0.5
+            ]
+          }
+        },
+        "mask_left": {
+          "position": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.35": [
+              2.2,
+              0,
+              0.91
+            ]
+          },
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "0.35": [
+              0.5,
+              1,
+              0.5
+            ]
+          }
+        }
+      }
+    },
+    "animation.ace_helmet.closing": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.35,
+      "bones": {
+        "visor": {
+          "position": {
+            "0.0": [
+              0,
+              3.6,
+              0.1
+            ],
+            "0.35": [
+              0,
+              0,
+              0
+            ]
+          },
+          "scale": {
+            "0.0": [
+              1,
+              0.05,
+              1
+            ],
+            "0.35": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "mask_right": {
+          "position": {
+            "0.0": [
+              -2.2,
+              0,
+              0.91
+            ],
+            "0.35": [
+              0,
+              0,
+              0
+            ]
+          },
+          "scale": {
+            "0.0": [
+              0.5,
+              1,
+              0.5
+            ],
+            "0.35": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "mask_left": {
+          "position": {
+            "0.0": [
+              2.2,
+              0,
+              0.91
+            ],
+            "0.35": [
+              0,
+              0,
+              0
+            ]
+          },
+          "scale": {
+            "0.0": [
+              0.5,
+              1,
+              0.5
+            ],
+            "0.35": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      }
+    }
+  }
+}

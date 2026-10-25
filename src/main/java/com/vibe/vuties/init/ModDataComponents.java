@@ -32,4 +32,8 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ArmorUpgradeTier>> UPGRADE_ARMOR =
         DATA_COMPONENTS.registerComponentType("upgrade_armor", builder ->
             builder.persistent(ArmorUpgradeTier.CODEC).networkSynchronized(ArmorUpgradeTier.STREAM_CODEC));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> HELMET_OPEN =
+        DATA_COMPONENTS.registerComponentType("helmet_open", builder ->
+            builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 }
