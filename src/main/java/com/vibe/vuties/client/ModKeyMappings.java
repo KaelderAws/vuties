@@ -29,4 +29,12 @@ public class ModKeyMappings {
         GLFW.GLFW_KEY_X,
         "key.categories.vuties"
     );
+
+    public static final KeyMapping TOGGLE_NIGHT_VISION = new KeyMapping(
+        "key.vuties.night_vision_toggle",
+        KeyConflictContext.IN_GAME,
+        InputConstants.Type.KEYSYM,
+        GLFW.GLFW_KEY_N,
+        "key.categories.vuties"
+    );
 }

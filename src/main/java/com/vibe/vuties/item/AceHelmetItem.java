@@ -1,16 +1,26 @@
 package com.vibe.vuties.item;
 
+import com.vibe.vuties.Vuties;
 import com.vibe.vuties.client.AceHelmetClientExtensions;
 import com.vibe.vuties.client.AceHelmetGeoRenderer;
 import com.vibe.vuties.client.AceHelmetItemRenderer;
 import com.vibe.vuties.init.ModArmorMaterials;
 import com.vibe.vuties.init.ModDataComponents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -23,9 +33,14 @@ import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class AceHelmetItem extends ArmorItem implements GeoItem {
+
+    private static final ResourceLocation ARMOR_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "helmet_armor");
+    private static final ResourceLocation TOUGHNESS_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "helmet_armor_toughness");
+    private static final ResourceLocation KNOCKBACK_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "helmet_armor_knockback_resistance");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -43,9 +58,142 @@ public class AceHelmetItem extends ArmorItem implements GeoItem {
         }
     }
 
+    public static boolean hasWaterBreathingUpgrade(ItemStack stack) {
+        return stack != null && stack.getOrDefault(ModDataComponents.UPGRADE_WATER_BREATHING.get(), false);
+    }
+
+    public static void setWaterBreathingUpgrade(ItemStack stack, boolean has) {
+        if (stack != null) {
+            stack.set(ModDataComponents.UPGRADE_WATER_BREATHING.get(), has);
+        }
+    }
+
+    public static boolean hasNightVisionUpgrade(ItemStack stack) {
+        return stack != null && stack.getOrDefault(ModDataComponents.UPGRADE_NIGHT_VISION.get(), false);
+    }
+
+    public static void setNightVisionUpgrade(ItemStack stack, boolean has) {
+        if (stack != null) {
+            stack.set(ModDataComponents.UPGRADE_NIGHT_VISION.get(), has);
+        }
+    }
+
+    public static boolean isNightVisionEnabled(ItemStack stack) {
+        return stack != null && stack.getOrDefault(ModDataComponents.NIGHT_VISION_ENABLED.get(), true);
+    }
+
+    public static void setNightVisionEnabled(ItemStack stack, boolean enabled) {
+        if (stack != null) {
+            stack.set(ModDataComponents.NIGHT_VISION_ENABLED.get(), enabled);
+        }
+    }
+
+    public static boolean isNightVisionActive(ItemStack stack) {
+        return hasNightVisionUpgrade(stack) && !isHelmetOpen(stack) && isNightVisionEnabled(stack);
+    }
+
+    public static boolean isWaterBreathingActive(ItemStack stack) {
+        return hasWaterBreathingUpgrade(stack) && !isHelmetOpen(stack);
+    }
+
+    public static ArmorUpgradeTier getArmorUpgrade(ItemStack stack) {
+        return stack != null ? stack.getOrDefault(ModDataComponents.UPGRADE_ARMOR.get(), ArmorUpgradeTier.NONE) : ArmorUpgradeTier.NONE;
+    }
+
+    public static void setArmorUpgrade(ItemStack stack, ArmorUpgradeTier tier) {
+        if (stack != null) {
+            stack.set(ModDataComponents.UPGRADE_ARMOR.get(), tier);
+        }
+    }
+
+    @Override
+    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        ArmorUpgradeTier tier = getArmorUpgrade(stack);
+        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
+
+        int armor = tier.getHelmetArmor();
+        float toughness = tier.getToughness();
+        float knockback = tier.getKnockbackResistance();
+
+        builder.add(Attributes.ARMOR,
+                new AttributeModifier(ARMOR_MODIFIER_ID, armor, AttributeModifier.Operation.ADD_VALUE),
+                EquipmentSlotGroup.HEAD);
+
+        if (toughness > 0.0F) {
+            builder.add(Attributes.ARMOR_TOUGHNESS,
+                    new AttributeModifier(TOUGHNESS_MODIFIER_ID, toughness, AttributeModifier.Operation.ADD_VALUE),
+                    EquipmentSlotGroup.HEAD);
+        }
+
+        if (knockback > 0.0F) {
+            builder.add(Attributes.KNOCKBACK_RESISTANCE,
+                    new AttributeModifier(KNOCKBACK_MODIFIER_ID, knockback, AttributeModifier.Operation.ADD_VALUE),
+                    EquipmentSlotGroup.HEAD);
+        }
+
+        return builder.build();
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        boolean maskOpen = isHelmetOpen(stack);
+        boolean waterBreathing = hasWaterBreathingUpgrade(stack);
+        boolean nightVisionInstalled = hasNightVisionUpgrade(stack);
+        boolean nightVisionEnabled = isNightVisionEnabled(stack);
+        ArmorUpgradeTier armorTier = getArmorUpgrade(stack);
+
+        // Статус забрала / маски
+        tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.mask",
+                maskOpen ? Component.translatable("tooltip.vuties.ace_helmet.mask.open").withStyle(ChatFormatting.RED)
+                         : Component.translatable("tooltip.vuties.ace_helmet.mask.closed").withStyle(ChatFormatting.GREEN))
+                .withStyle(ChatFormatting.YELLOW));
+
+        // Статус дыхания под водой
+        if (waterBreathing) {
+            if (!maskOpen) {
+                tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.water_breathing_active")
+                        .withStyle(ChatFormatting.GREEN));
+            } else {
+                tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.water_breathing_unsealed")
+                        .withStyle(ChatFormatting.RED));
+            }
+        } else {
+            tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.water_breathing_locked")
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        }
+
+        // Статус ночного зрения
+        if (nightVisionInstalled) {
+            if (!maskOpen) {
+                if (nightVisionEnabled) {
+                    tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.night_vision_active")
+                            .withStyle(ChatFormatting.GREEN));
+                } else {
+                    tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.night_vision_off")
+                            .withStyle(ChatFormatting.GRAY));
+                }
+            } else {
+                tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.night_vision_unsealed")
+                        .withStyle(ChatFormatting.RED));
+            }
+        } else {
+            tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.night_vision_locked")
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        }
+
+        // Статус брони
+        tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.armor_tier." + armorTier.getSerializedName())
+                .withStyle(ChatFormatting.GOLD));
+
+        // Подсказки управления
+        tooltip.add(Component.translatable("tooltip.vuties.ace_helmet.controls")
+                .withStyle(ChatFormatting.DARK_AQUA));
+
+        super.appendHoverText(stack, context, tooltip, flag);
+    }
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        // Контроллер анимации открытия/закрытия маски и визора (с плавным переходом в 6 тиков)
         controllers.add(new AnimationController<>(this, "mask_visor_controller", 6, state -> {
             ItemStack stack = state.getData(DataTickets.ITEMSTACK);
             boolean open = isHelmetOpen(stack);

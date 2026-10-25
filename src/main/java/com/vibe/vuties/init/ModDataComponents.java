@@ -36,4 +36,16 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> HELMET_OPEN =
         DATA_COMPONENTS.registerComponentType("helmet_open", builder ->
             builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> UPGRADE_WATER_BREATHING =
+        DATA_COMPONENTS.registerComponentType("upgrade_water_breathing", builder ->
+            builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> UPGRADE_NIGHT_VISION =
+        DATA_COMPONENTS.registerComponentType("upgrade_night_vision", builder ->
+            builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> NIGHT_VISION_ENABLED =
+        DATA_COMPONENTS.registerComponentType("night_vision_enabled", builder ->
+            builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 }

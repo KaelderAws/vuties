@@ -32,6 +32,12 @@ public class ModNetwork {
             HelmetTogglePayload.STREAM_CODEC,
             ModNetwork::handleHelmetToggle
         );
+
+        registrar.playToServer(
+            NightVisionTogglePayload.TYPE,
+            NightVisionTogglePayload.STREAM_CODEC,
+            ModNetwork::handleNightVisionToggle
+        );
     }
 
     public static void handleInput(RotorpackInputPayload payload, IPayloadContext context) {
@@ -108,6 +114,35 @@ public class ModNetwork {
                     Component.translatable(next ? "message.vuties.helmet_open" : "message.vuties.helmet_closed"),
                     true
                 );
+            }
+        });
+    }
+
+    public static void handleNightVisionToggle(NightVisionTogglePayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player == null) return;
+
+            ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+            if (head.getItem() instanceof AceHelmetItem) {
+                if (!AceHelmetItem.hasNightVisionUpgrade(head)) {
+                    player.displayClientMessage(
+                        Component.translatable("message.vuties.night_vision_unavailable"),
+                        true
+                    );
+                } else if (AceHelmetItem.isHelmetOpen(head)) {
+                    player.displayClientMessage(
+                        Component.translatable("message.vuties.night_vision_mask_open"),
+                        true
+                    );
+                } else {
+                    boolean next = !AceHelmetItem.isNightVisionEnabled(head);
+                    AceHelmetItem.setNightVisionEnabled(head, next);
+                    player.displayClientMessage(
+                        Component.translatable(next ? "message.vuties.night_vision_on" : "message.vuties.night_vision_off"),
+                        true
+                    );
+                }
             }
         });
     }

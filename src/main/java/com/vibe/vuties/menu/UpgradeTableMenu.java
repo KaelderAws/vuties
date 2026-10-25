@@ -3,6 +3,7 @@ package com.vibe.vuties.menu;
 import com.vibe.vuties.init.ModBlocks;
 import com.vibe.vuties.init.ModItems;
 import com.vibe.vuties.init.ModMenuTypes;
+import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.ArmorUpgradeTier;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.world.SimpleContainer;
@@ -15,9 +16,12 @@ import net.minecraft.world.item.ItemStack;
 
 public class UpgradeTableMenu extends AbstractContainerMenu {
 
-    public static final int ROTORPACK_SLOT = 0;
-    public static final int HOVER_SLOT = 1;
-    public static final int WINGS_SLOT = 2;
+    public static final int GEAR_SLOT = 0;
+    public static final int ROTORPACK_SLOT = 0; // Backwards compatibility alias
+    public static final int UPGRADE_1_SLOT = 1;
+    public static final int HOVER_SLOT = 1;     // Backwards compatibility alias
+    public static final int UPGRADE_2_SLOT = 2;
+    public static final int WINGS_SLOT = 2;     // Backwards compatibility alias
     public static final int ARMOR_SLOT = 3;
 
     private static final int INV_START = 4;
@@ -25,7 +29,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
     private static final int HOTBAR_START = 31;
     private static final int HOTBAR_END = 40;
 
-    private final SimpleContainer rotorpackContainer = new SimpleContainer(1);
+    private final SimpleContainer gearContainer = new SimpleContainer(1);
     private final SimpleContainer upgradesContainer = new SimpleContainer(3);
     private final ContainerLevelAccess access;
     private final Player player;
@@ -41,11 +45,11 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
         this.access = access;
         this.player = playerInventory.player;
 
-        // Slot 0: Rotorpack Slot (x = 27, y = 35)
-        this.addSlot(new Slot(this.rotorpackContainer, 0, 27, 35) {
+        // Slot 0: Gear Slot (Rotorpack or Ace Helmet) (x = 27, y = 35)
+        this.addSlot(new Slot(this.gearContainer, 0, 27, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof RotorpackItem;
+                return stack.getItem() instanceof RotorpackItem || stack.getItem() instanceof AceHelmetItem;
             }
 
             @Override
@@ -56,15 +60,20 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             @Override
             public void setChanged() {
                 super.setChanged();
-                UpgradeTableMenu.this.onRotorpackSlotChanged();
+                UpgradeTableMenu.this.onGearSlotChanged();
             }
         });
 
-        // Slot 1: Hover Upgrade Slot (x = 81, y = 35)
+        // Slot 1: Upgrade 1 (Hover for Rotorpack / Water Breathing for Helmet) (x = 81, y = 35)
         this.addSlot(new Slot(this.upgradesContainer, 0, 81, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return isRotorpackPresent() && stack.is(ModItems.HOVER_UPGRADE.get());
+                if (isRotorpackPresent()) {
+                    return stack.is(ModItems.HOVER_UPGRADE.get());
+                } else if (isHelmetPresent()) {
+                    return stack.is(ModItems.WATER_BREATHING_UPGRADE.get());
+                }
+                return false;
             }
 
             @Override
@@ -79,11 +88,16 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             }
         });
 
-        // Slot 2: Wings Upgrade Slot (x = 107, y = 35)
+        // Slot 2: Upgrade 2 (Wings for Rotorpack / Night Vision for Helmet) (x = 107, y = 35)
         this.addSlot(new Slot(this.upgradesContainer, 1, 107, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return isRotorpackPresent() && stack.is(ModItems.WINGS_UPGRADE.get());
+                if (isRotorpackPresent()) {
+                    return stack.is(ModItems.WINGS_UPGRADE.get());
+                } else if (isHelmetPresent()) {
+                    return stack.is(ModItems.NIGHT_VISION_UPGRADE.get());
+                }
+                return false;
             }
 
             @Override
@@ -102,7 +116,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
         this.addSlot(new Slot(this.upgradesContainer, 2, 133, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return isRotorpackPresent() && isArmorUpgradeItem(stack);
+                return isGearPresent() && isArmorUpgradeItem(stack);
             }
 
             @Override
@@ -130,12 +144,20 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
         }
 
         // Listeners for container changes
-        this.rotorpackContainer.addListener(c -> this.onRotorpackSlotChanged());
+        this.gearContainer.addListener(c -> this.onGearSlotChanged());
         this.upgradesContainer.addListener(c -> this.onUpgradeSlotsChanged());
     }
 
+    public boolean isGearPresent() {
+        return isRotorpackPresent() || isHelmetPresent();
+    }
+
     public boolean isRotorpackPresent() {
-        return this.rotorpackContainer.getItem(0).getItem() instanceof RotorpackItem;
+        return this.gearContainer.getItem(0).getItem() instanceof RotorpackItem;
+    }
+
+    public boolean isHelmetPresent() {
+        return this.gearContainer.getItem(0).getItem() instanceof AceHelmetItem;
     }
 
     public static boolean isArmorUpgradeItem(ItemStack stack) {
@@ -155,37 +177,47 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
         return ArmorUpgradeTier.NONE;
     }
 
-    public void onRotorpackSlotChanged() {
+    public void onGearSlotChanged() {
         if (this.isUpdating) return;
         this.isUpdating = true;
         try {
-            ItemStack rotorpack = this.rotorpackContainer.getItem(0);
-            if (rotorpack.getItem() instanceof RotorpackItem) {
-                // Populate upgrade slots from the rotorpack's components
+            ItemStack gear = this.gearContainer.getItem(0);
+            if (gear.getItem() instanceof RotorpackItem) {
                 // 1. Hover
-                if (RotorpackItem.hasHoverUpgrade(rotorpack)) {
+                if (RotorpackItem.hasHoverUpgrade(gear)) {
                     this.upgradesContainer.setItem(0, new ItemStack(ModItems.HOVER_UPGRADE.get()));
                 } else {
                     this.upgradesContainer.setItem(0, ItemStack.EMPTY);
                 }
 
                 // 2. Wings
-                if (RotorpackItem.hasWingsUpgrade(rotorpack)) {
+                if (RotorpackItem.hasWingsUpgrade(gear)) {
                     this.upgradesContainer.setItem(1, new ItemStack(ModItems.WINGS_UPGRADE.get()));
                 } else {
                     this.upgradesContainer.setItem(1, ItemStack.EMPTY);
                 }
 
                 // 3. Armor
-                ArmorUpgradeTier tier = RotorpackItem.getArmorUpgrade(rotorpack);
-                switch (tier) {
-                    case IRON -> this.upgradesContainer.setItem(2, new ItemStack(ModItems.IRON_ARMOR_UPGRADE.get()));
-                    case DIAMOND -> this.upgradesContainer.setItem(2, new ItemStack(ModItems.DIAMOND_ARMOR_UPGRADE.get()));
-                    case NETHERITE -> this.upgradesContainer.setItem(2, new ItemStack(ModItems.NETHERITE_ARMOR_UPGRADE.get()));
-                    default -> this.upgradesContainer.setItem(2, ItemStack.EMPTY);
+                populateArmorSlot(RotorpackItem.getArmorUpgrade(gear));
+            } else if (gear.getItem() instanceof AceHelmetItem) {
+                // 1. Water Breathing
+                if (AceHelmetItem.hasWaterBreathingUpgrade(gear)) {
+                    this.upgradesContainer.setItem(0, new ItemStack(ModItems.WATER_BREATHING_UPGRADE.get()));
+                } else {
+                    this.upgradesContainer.setItem(0, ItemStack.EMPTY);
                 }
+
+                // 2. Night Vision
+                if (AceHelmetItem.hasNightVisionUpgrade(gear)) {
+                    this.upgradesContainer.setItem(1, new ItemStack(ModItems.NIGHT_VISION_UPGRADE.get()));
+                } else {
+                    this.upgradesContainer.setItem(1, ItemStack.EMPTY);
+                }
+
+                // 3. Armor
+                populateArmorSlot(AceHelmetItem.getArmorUpgrade(gear));
             } else {
-                // Rotorpack removed: clear upgrade slots
+                // Gear removed: clear upgrade slots
                 this.upgradesContainer.setItem(0, ItemStack.EMPTY);
                 this.upgradesContainer.setItem(1, ItemStack.EMPTY);
                 this.upgradesContainer.setItem(2, ItemStack.EMPTY);
@@ -196,32 +228,61 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
         }
     }
 
+    private void populateArmorSlot(ArmorUpgradeTier tier) {
+        switch (tier) {
+            case IRON -> this.upgradesContainer.setItem(2, new ItemStack(ModItems.IRON_ARMOR_UPGRADE.get()));
+            case DIAMOND -> this.upgradesContainer.setItem(2, new ItemStack(ModItems.DIAMOND_ARMOR_UPGRADE.get()));
+            case NETHERITE -> this.upgradesContainer.setItem(2, new ItemStack(ModItems.NETHERITE_ARMOR_UPGRADE.get()));
+            default -> this.upgradesContainer.setItem(2, ItemStack.EMPTY);
+        }
+    }
+
     public void onUpgradeSlotsChanged() {
         if (this.isUpdating) return;
         this.isUpdating = true;
         try {
-            ItemStack rotorpack = this.rotorpackContainer.getItem(0);
-            if (rotorpack.getItem() instanceof RotorpackItem) {
+            ItemStack gear = this.gearContainer.getItem(0);
+            if (gear.getItem() instanceof RotorpackItem) {
                 // 1. Hover
                 ItemStack hoverStack = this.upgradesContainer.getItem(0);
-                RotorpackItem.setHoverUpgrade(rotorpack, hoverStack.is(ModItems.HOVER_UPGRADE.get()));
+                RotorpackItem.setHoverUpgrade(gear, hoverStack.is(ModItems.HOVER_UPGRADE.get()));
 
                 // 2. Wings
                 ItemStack wingsStack = this.upgradesContainer.getItem(1);
-                RotorpackItem.setWingsUpgrade(rotorpack, wingsStack.is(ModItems.WINGS_UPGRADE.get()));
+                RotorpackItem.setWingsUpgrade(gear, wingsStack.is(ModItems.WINGS_UPGRADE.get()));
 
                 // 3. Armor
                 ItemStack armorStack = this.upgradesContainer.getItem(2);
                 ArmorUpgradeTier tier = getArmorTierFromItem(armorStack);
-                RotorpackItem.setArmorUpgrade(rotorpack, tier);
+                RotorpackItem.setArmorUpgrade(gear, tier);
 
-                // Notify rotorpack slot that its components changed
-                this.getSlot(ROTORPACK_SLOT).setChanged();
+                this.getSlot(GEAR_SLOT).setChanged();
+                this.broadcastChanges();
+            } else if (gear.getItem() instanceof AceHelmetItem) {
+                // 1. Water Breathing
+                ItemStack waterStack = this.upgradesContainer.getItem(0);
+                AceHelmetItem.setWaterBreathingUpgrade(gear, waterStack.is(ModItems.WATER_BREATHING_UPGRADE.get()));
+
+                // 2. Night Vision
+                ItemStack nightStack = this.upgradesContainer.getItem(1);
+                AceHelmetItem.setNightVisionUpgrade(gear, nightStack.is(ModItems.NIGHT_VISION_UPGRADE.get()));
+
+                // 3. Armor
+                ItemStack armorStack = this.upgradesContainer.getItem(2);
+                ArmorUpgradeTier tier = getArmorTierFromItem(armorStack);
+                AceHelmetItem.setArmorUpgrade(gear, tier);
+
+                this.getSlot(GEAR_SLOT).setChanged();
                 this.broadcastChanges();
             }
         } finally {
             this.isUpdating = false;
         }
+    }
+
+    // Backwards-compatible hook alias
+    public void onRotorpackSlotChanged() {
+        onGearSlotChanged();
     }
 
     @Override
@@ -233,13 +294,13 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             itemstack = stackInSlot.copy();
 
-            if (index == ROTORPACK_SLOT) {
-                // Quick-move Rotorpack out to player inventory
+            if (index == GEAR_SLOT) {
+                // Quick-move gear out to player inventory
                 if (!this.moveItemStackTo(stackInSlot, INV_START, HOTBAR_END, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(stackInSlot, itemstack);
-            } else if (index >= HOVER_SLOT && index <= ARMOR_SLOT) {
+            } else if (index >= UPGRADE_1_SLOT && index <= ARMOR_SLOT) {
                 // Quick-move an Upgrade out to player inventory
                 if (!this.moveItemStackTo(stackInSlot, INV_START, HOTBAR_END, false)) {
                     return ItemStack.EMPTY;
@@ -247,20 +308,28 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 slot.onQuickCraft(stackInSlot, itemstack);
             } else {
                 // From player inventory into table slots
-                if (stackInSlot.getItem() instanceof RotorpackItem) {
-                    if (!this.moveItemStackTo(stackInSlot, ROTORPACK_SLOT, ROTORPACK_SLOT + 1, false)) {
+                if (stackInSlot.getItem() instanceof RotorpackItem || stackInSlot.getItem() instanceof AceHelmetItem) {
+                    if (!this.moveItemStackTo(stackInSlot, GEAR_SLOT, GEAR_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (stackInSlot.is(ModItems.HOVER_UPGRADE.get())) {
-                    if (!isRotorpackPresent() || !this.moveItemStackTo(stackInSlot, HOVER_SLOT, HOVER_SLOT + 1, false)) {
+                    if (!isRotorpackPresent() || !this.moveItemStackTo(stackInSlot, UPGRADE_1_SLOT, UPGRADE_1_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (stackInSlot.is(ModItems.WINGS_UPGRADE.get())) {
-                    if (!isRotorpackPresent() || !this.moveItemStackTo(stackInSlot, WINGS_SLOT, WINGS_SLOT + 1, false)) {
+                    if (!isRotorpackPresent() || !this.moveItemStackTo(stackInSlot, UPGRADE_2_SLOT, UPGRADE_2_SLOT + 1, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (stackInSlot.is(ModItems.WATER_BREATHING_UPGRADE.get())) {
+                    if (!isHelmetPresent() || !this.moveItemStackTo(stackInSlot, UPGRADE_1_SLOT, UPGRADE_1_SLOT + 1, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (stackInSlot.is(ModItems.NIGHT_VISION_UPGRADE.get())) {
+                    if (!isHelmetPresent() || !this.moveItemStackTo(stackInSlot, UPGRADE_2_SLOT, UPGRADE_2_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (isArmorUpgradeItem(stackInSlot)) {
-                    if (!isRotorpackPresent()) {
+                    if (!isGearPresent()) {
                         return ItemStack.EMPTY;
                     }
                     Slot armorSlot = this.slots.get(ARMOR_SLOT);
@@ -309,9 +378,9 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
     public void removed(Player player) {
         super.removed(player);
         this.access.execute((level, pos) -> {
-            ItemStack rotorpack = this.rotorpackContainer.getItem(0);
-            if (!rotorpack.isEmpty()) {
-                // Ensure current upgrades are saved onto the rotorpack
+            ItemStack gear = this.gearContainer.getItem(0);
+            if (!gear.isEmpty()) {
+                // Ensure current upgrades are saved onto the gear
                 this.onUpgradeSlotsChanged();
                 // Clear upgrade slots so they don't drop duplicate items
                 this.isUpdating = true;
@@ -319,11 +388,11 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                     this.upgradesContainer.setItem(0, ItemStack.EMPTY);
                     this.upgradesContainer.setItem(1, ItemStack.EMPTY);
                     this.upgradesContainer.setItem(2, ItemStack.EMPTY);
-                    this.rotorpackContainer.setItem(0, ItemStack.EMPTY);
+                    this.gearContainer.setItem(0, ItemStack.EMPTY);
                 } finally {
                     this.isUpdating = false;
                 }
-                player.getInventory().placeItemBackInInventory(rotorpack);
+                player.getInventory().placeItemBackInInventory(gear);
             }
         });
     }

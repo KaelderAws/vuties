@@ -2,11 +2,15 @@ package com.vibe.vuties.client;
 
 import com.vibe.vuties.Vuties;
 import com.vibe.vuties.init.ModMenuTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 @EventBusSubscriber(modid = Vuties.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientModEvents {
@@ -16,10 +20,26 @@ public class ClientModEvents {
         event.register(ModKeyMappings.TOGGLE_ENGINE);
         event.register(ModKeyMappings.TOGGLE_HOVER);
         event.register(ModKeyMappings.TOGGLE_HELMET);
+        event.register(ModKeyMappings.TOGGLE_NIGHT_VISION);
     }
 
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.UPGRADE_TABLE.get(), UpgradeTableScreen::new);
+    }
+
+    @SubscribeEvent
+    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerMobEffect(new IClientMobEffectExtensions() {
+            @Override
+            public boolean isVisibleInInventory(MobEffectInstance instance) {
+                return instance.showIcon();
+            }
+
+            @Override
+            public boolean isVisibleInGui(MobEffectInstance instance) {
+                return instance.showIcon();
+            }
+        }, MobEffects.NIGHT_VISION);
     }
 }

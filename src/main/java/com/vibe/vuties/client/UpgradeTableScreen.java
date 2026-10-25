@@ -32,12 +32,20 @@ public class UpgradeTableScreen extends AbstractContainerScreen<UpgradeTableMenu
         // Tooltips for empty slots
         if (this.hoveredSlot != null && !this.hoveredSlot.hasItem()) {
             int slotIdx = this.hoveredSlot.index;
-            if (slotIdx == UpgradeTableMenu.ROTORPACK_SLOT) {
-                graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_rotorpack"), mouseX, mouseY);
-            } else if (slotIdx == UpgradeTableMenu.HOVER_SLOT) {
-                graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_hover"), mouseX, mouseY);
-            } else if (slotIdx == UpgradeTableMenu.WINGS_SLOT) {
-                graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_wings"), mouseX, mouseY);
+            if (slotIdx == UpgradeTableMenu.GEAR_SLOT) {
+                graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_gear"), mouseX, mouseY);
+            } else if (slotIdx == UpgradeTableMenu.UPGRADE_1_SLOT) {
+                if (this.menu.isHelmetPresent()) {
+                    graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_water_breathing"), mouseX, mouseY);
+                } else {
+                    graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_hover"), mouseX, mouseY);
+                }
+            } else if (slotIdx == UpgradeTableMenu.UPGRADE_2_SLOT) {
+                if (this.menu.isHelmetPresent()) {
+                    graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_night_vision"), mouseX, mouseY);
+                } else {
+                    graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_wings"), mouseX, mouseY);
+                }
             } else if (slotIdx == UpgradeTableMenu.ARMOR_SLOT) {
                 graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_armor"), mouseX, mouseY);
             }

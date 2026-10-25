@@ -42,7 +42,7 @@ public class ModArmorMaterials {
                 map.put(ArmorItem.Type.BOOTS, 1);
                 map.put(ArmorItem.Type.LEGGINGS, 2);
                 map.put(ArmorItem.Type.CHESTPLATE, 2);
-                map.put(ArmorItem.Type.HELMET, 2);
+                map.put(ArmorItem.Type.HELMET, 1);
                 map.put(ArmorItem.Type.BODY, 2);
             }),
             15,

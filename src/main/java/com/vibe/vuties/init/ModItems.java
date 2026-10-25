@@ -31,6 +31,12 @@ public class ModItems {
     public static final DeferredItem<UpgradeItem> WINGS_UPGRADE = ITEMS.registerItem("wings_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.WINGS, p));
 
+    public static final DeferredItem<UpgradeItem> WATER_BREATHING_UPGRADE = ITEMS.registerItem("water_breathing_upgrade",
+        p -> new UpgradeItem(UpgradeItem.Type.WATER_BREATHING, p));
+
+    public static final DeferredItem<UpgradeItem> NIGHT_VISION_UPGRADE = ITEMS.registerItem("night_vision_upgrade",
+        p -> new UpgradeItem(UpgradeItem.Type.NIGHT_VISION, p));
+
     public static final DeferredItem<UpgradeItem> IRON_ARMOR_UPGRADE = ITEMS.registerItem("iron_armor_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.IRON_ARMOR, p));
 

@@ -24,6 +24,8 @@ public class ModCreativeTabs {
                 output.accept(ModItems.UPGRADE_TABLE.get());
                 output.accept(ModItems.HOVER_UPGRADE.get());
                 output.accept(ModItems.WINGS_UPGRADE.get());
+                output.accept(ModItems.WATER_BREATHING_UPGRADE.get());
+                output.accept(ModItems.NIGHT_VISION_UPGRADE.get());
                 output.accept(ModItems.IRON_ARMOR_UPGRADE.get());
                 output.accept(ModItems.DIAMOND_ARMOR_UPGRADE.get());
                 output.accept(ModItems.NETHERITE_ARMOR_UPGRADE.get());

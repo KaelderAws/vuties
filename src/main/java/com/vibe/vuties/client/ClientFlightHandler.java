@@ -6,6 +6,8 @@ import com.vibe.vuties.Vuties;
 import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.network.HelmetTogglePayload;
+import com.vibe.vuties.network.NightVisionTogglePayload;
+import net.minecraft.network.chat.Component;
 import com.vibe.vuties.network.RotorpackInputPayload;
 import com.vibe.vuties.network.RotorpackTogglePayload;
 import net.minecraft.client.Minecraft;
@@ -70,6 +72,32 @@ public class ClientFlightHandler {
             if (head.getItem() instanceof AceHelmetItem) {
                 AceHelmetItem.setHelmetOpen(head, !AceHelmetItem.isHelmetOpen(head));
                 PacketDistributor.sendToServer(new HelmetTogglePayload());
+            }
+        }
+
+        // Переключение ночного зрения шлема
+        while (ModKeyMappings.TOGGLE_NIGHT_VISION.consumeClick()) {
+            ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+            if (head.getItem() instanceof AceHelmetItem) {
+                if (!AceHelmetItem.hasNightVisionUpgrade(head)) {
+                    player.displayClientMessage(
+                        Component.translatable("message.vuties.night_vision_unavailable"),
+                        true
+                    );
+                } else if (AceHelmetItem.isHelmetOpen(head)) {
+                    player.displayClientMessage(
+                        Component.translatable("message.vuties.night_vision_mask_open"),
+                        true
+                    );
+                } else {
+                    boolean next = !AceHelmetItem.isNightVisionEnabled(head);
+                    AceHelmetItem.setNightVisionEnabled(head, next);
+                    player.displayClientMessage(
+                        Component.translatable(next ? "message.vuties.night_vision_on" : "message.vuties.night_vision_off"),
+                        true
+                    );
+                    PacketDistributor.sendToServer(new NightVisionTogglePayload());
+                }
             }
         }
 
