@@ -21,6 +21,7 @@ public class ClientModEvents {
         event.register(ModKeyMappings.TOGGLE_HOVER);
         event.register(ModKeyMappings.TOGGLE_HELMET);
         event.register(ModKeyMappings.TOGGLE_NIGHT_VISION);
+        event.register(ModKeyMappings.PHASE_SHIFT);
     }
 
     @SubscribeEvent

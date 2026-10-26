@@ -37,4 +37,12 @@ public class ModKeyMappings {
         GLFW.GLFW_KEY_N,
         "key.categories.vuties"
     );
+
+    public static final KeyMapping PHASE_SHIFT = new KeyMapping(
+        "key.vuties.phase_shift",
+        KeyConflictContext.IN_GAME,
+        InputConstants.Type.KEYSYM,
+        GLFW.GLFW_KEY_R,
+        "key.categories.vuties"
+    );
 }

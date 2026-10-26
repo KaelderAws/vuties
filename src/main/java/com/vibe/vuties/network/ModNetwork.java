@@ -1,11 +1,14 @@
 package com.vibe.vuties.network;
 
 import com.vibe.vuties.item.AceHelmetItem;
+import com.vibe.vuties.item.ExoLegsItem;
+import com.vibe.vuties.logic.PhaseShiftManager;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -37,6 +40,12 @@ public class ModNetwork {
             NightVisionTogglePayload.TYPE,
             NightVisionTogglePayload.STREAM_CODEC,
             ModNetwork::handleNightVisionToggle
+        );
+
+        registrar.playToServer(
+            PhaseShiftPayload.TYPE,
+            PhaseShiftPayload.STREAM_CODEC,
+            ModNetwork::handlePhaseShift
         );
     }
 
@@ -142,6 +151,31 @@ public class ModNetwork {
                         Component.translatable(next ? "message.vuties.night_vision_on" : "message.vuties.night_vision_off"),
                         true
                     );
+                }
+            }
+        });
+    }
+
+    public static void handlePhaseShift(PhaseShiftPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player == null) return;
+
+            ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
+            if (legs.getItem() instanceof ExoLegsItem) {
+                Vec3 vec = new Vec3(payload.vx(), payload.vy(), payload.vz());
+                if (payload.action() == 0) {
+                    PhaseShiftManager.executePhaseShift(player, vec);
+                    player.setPos(player.getX() + vec.x, player.getY() + vec.y, player.getZ() + vec.z);
+                    player.noPhysics = true;
+                    player.resetFallDistance();
+                } else if (payload.action() == 1) {
+                    PhaseShiftManager.steerPhaseShift(player, vec);
+                    player.setPos(player.getX() + vec.x, player.getY() + vec.y, player.getZ() + vec.z);
+                    player.noPhysics = true;
+                    player.resetFallDistance();
+                } else if (payload.action() == 2) {
+                    PhaseShiftManager.endPhaseShift(player);
                 }
             }
         });

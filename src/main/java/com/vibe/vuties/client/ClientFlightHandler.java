@@ -4,6 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.vibe.vuties.Vuties;
 import com.vibe.vuties.item.AceHelmetItem;
+import com.vibe.vuties.item.ExoLegsItem;
+import com.vibe.vuties.logic.PhaseShiftManager;
+import com.vibe.vuties.network.PhaseShiftPayload;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.network.HelmetTogglePayload;
 import com.vibe.vuties.network.NightVisionTogglePayload;
@@ -11,6 +14,10 @@ import net.minecraft.network.chat.Component;
 import com.vibe.vuties.network.RotorpackInputPayload;
 import com.vibe.vuties.network.RotorpackTogglePayload;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.PlayerModel;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -68,7 +75,7 @@ public class ClientFlightHandler {
 
         // Переключение забрала / маски шлема
         while (ModKeyMappings.TOGGLE_HELMET.consumeClick()) {
-            ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+        ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
             if (head.getItem() instanceof AceHelmetItem) {
                 AceHelmetItem.setHelmetOpen(head, !AceHelmetItem.isHelmetOpen(head));
                 PacketDistributor.sendToServer(new HelmetTogglePayload());
@@ -97,6 +104,41 @@ public class ClientFlightHandler {
                         true
                     );
                     PacketDistributor.sendToServer(new NightVisionTogglePayload());
+                }
+            }
+        }
+
+        // Управление и обработка Фазового сдвига (Phase Shift / Phantom Dash)
+        PhaseShiftManager.tickPlayer(player);
+
+        if (PhaseShiftManager.isPhaseShiftActive(player)) {
+            // УПРАВЛЕНИЕ НАПРАВЛЕНИЕМ В ПРОЦЕССЕ РЫВКА В РЕАЛЬНОМ ВРЕМЕНИ
+            Vec3 steerDir = calculatePhaseSteerDirection(player);
+            Vec3 motion = steerDir.scale(PhaseShiftManager.DASH_SPEED);
+
+            player.setDeltaMovement(motion);
+            // Прямое перемещение позиции сквозь любые блоки и стены
+            player.setPos(player.getX() + motion.x, player.getY() + motion.y, player.getZ() + motion.z);
+            player.noPhysics = true;
+            player.resetFallDistance();
+
+            // Отправляем пакет синхронизации направления на сервер
+            PacketDistributor.sendToServer(new PhaseShiftPayload(1, motion.x, motion.y, motion.z));
+
+            // Записываем узел 3D светового шлейфа Трона (без партиклов)
+            PhaseShiftClientRenderer.recordRibbonNode(player);
+        } else {
+            // Активация рывка по клавише [R]
+            while (ModKeyMappings.PHASE_SHIFT.consumeClick()) {
+                ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
+                if (legs.getItem() instanceof ExoLegsItem && PhaseShiftManager.canPhaseShift(player)) {
+                    Vec3 steerDir = calculatePhaseSteerDirection(player);
+                    Vec3 motion = steerDir.scale(PhaseShiftManager.DASH_SPEED);
+
+                    PhaseShiftManager.executePhaseShift(player, motion);
+                    player.setPos(player.getX() + motion.x, player.getY() + motion.y, player.getZ() + motion.z);
+                    PacketDistributor.sendToServer(new PhaseShiftPayload(0, motion.x, motion.y, motion.z));
+                    PhaseShiftClientRenderer.recordRibbonNode(player);
                 }
             }
         }
@@ -376,17 +418,64 @@ public class ClientFlightHandler {
         }
     }
 
+    private static Field cloakField = null;
+    private static boolean cloakFieldInitialized = false;
+
+    private static void setCloakVisible(PlayerModel<?> model, boolean visible) {
+        if (!cloakFieldInitialized) {
+            cloakFieldInitialized = true;
+            try {
+                cloakField = PlayerModel.class.getDeclaredField("cloak");
+                cloakField.setAccessible(true);
+            } catch (NoSuchFieldException e) {
+                for (Field f : PlayerModel.class.getDeclaredFields()) {
+                    if (f.getType() == ModelPart.class && !Modifier.isPublic(f.getModifiers()) && !Modifier.isStatic(f.getModifiers())) {
+                        f.setAccessible(true);
+                        cloakField = f;
+                        break;
+                    }
+                }
+            }
+        }
+        if (cloakField != null) {
+            try {
+                ModelPart part = (ModelPart) cloakField.get(model);
+                if (part != null) {
+                    part.visible = visible;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
         if (player == null || player.isSpectator()) return;
 
+        var model = event.getRenderer().getModel();
+
         ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
         if (head.getItem() instanceof AceHelmetItem) {
-            event.getRenderer().getModel().hat.visible = false;
+            model.hat.visible = false;
         }
 
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+        if (chest.getItem() instanceof RotorpackItem) {
+            // Скрываем внешний слой торса и рукавов, а также плащ
+            model.jacket.visible = false;
+            model.leftSleeve.visible = false;
+            model.rightSleeve.visible = false;
+            setCloakVisible(model, false);
+        }
+
+        ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
+        if (legs.getItem() instanceof ExoLegsItem) {
+            // Скрываем внешний слой штанин (Left Pant Leg и Right Pant Leg)
+            model.leftPants.visible = false;
+            model.rightPants.visible = false;
+        }
+
         if (!(chest.getItem() instanceof RotorpackItem) || !RotorpackItem.isEngineEnabled(chest)) {
             return;
         }
@@ -425,5 +514,52 @@ public class ClientFlightHandler {
                 }
             }
         }
+    }
+
+    public static Vec3 calculatePhaseSteerDirection(LocalPlayer player) {
+        Minecraft mc = Minecraft.getInstance();
+        boolean up = mc.options.keyUp.isDown();
+        boolean down = mc.options.keyDown.isDown();
+        boolean left = mc.options.keyLeft.isDown();
+        boolean right = mc.options.keyRight.isDown();
+        boolean jump = mc.options.keyJump.isDown();
+        boolean shift = mc.options.keyShift.isDown();
+
+        float forward = (up ? 1.0f : 0.0f) - (down ? 1.0f : 0.0f);
+        float strafe = (left ? 1.0f : 0.0f) - (right ? 1.0f : 0.0f);
+
+        Vec3 look = player.getLookAngle();
+
+        // 1. Если игрок не использует стрейфы (только W, только S, или без клавиш):
+        // Направление на 100% идеально следует за прицелом мыши в полном 3D пространстве
+        if (strafe == 0) {
+            Vec3 dir = (forward < 0) ? look.scale(-1.0) : look;
+            double vy = dir.y;
+            if (jump) vy += 0.35;
+            if (shift) vy -= 0.35;
+            return new Vec3(dir.x, vy, dir.z).normalize();
+        }
+
+        // 2. Если зажаты клавиши стрейфа (A или D):
+        float rad = (float) Math.toRadians(player.getYRot());
+        float sin = Mth.sin(rad);
+        float cos = Mth.cos(rad);
+
+        // Вектор вперёд: (-sin, cos), вектор влево (Left): (+cos, +sin)
+        float dx = -sin * forward + cos * strafe;
+        float dz = cos * forward + sin * strafe;
+        Vec3 horiz = new Vec3(dx, 0, dz).normalize();
+
+        double vy = 0.0;
+        if (forward > 0) {
+            vy = look.y;
+        } else if (forward < 0) {
+            vy = -look.y;
+        }
+
+        if (jump) vy += 0.4;
+        if (shift) vy -= 0.4;
+
+        return new Vec3(horiz.x, vy, horiz.z).normalize();
     }
 }

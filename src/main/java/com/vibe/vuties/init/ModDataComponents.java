@@ -48,4 +48,8 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> NIGHT_VISION_ENABLED =
         DATA_COMPONENTS.registerComponentType("night_vision_enabled", builder ->
             builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> UPGRADE_PHASE =
+        DATA_COMPONENTS.registerComponentType("upgrade_phase", builder ->
+            builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 }

@@ -4,6 +4,7 @@ import com.vibe.vuties.init.ModBlocks;
 import com.vibe.vuties.init.ModItems;
 import com.vibe.vuties.init.ModMenuTypes;
 import com.vibe.vuties.item.AceHelmetItem;
+import com.vibe.vuties.item.ExoLegsItem;
 import com.vibe.vuties.item.ArmorUpgradeTier;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.world.SimpleContainer;
@@ -49,7 +50,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
         this.addSlot(new Slot(this.gearContainer, 0, 27, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof RotorpackItem || stack.getItem() instanceof AceHelmetItem;
+                return stack.getItem() instanceof RotorpackItem || stack.getItem() instanceof AceHelmetItem || stack.getItem() instanceof ExoLegsItem;
             }
 
             @Override
@@ -72,6 +73,8 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                     return stack.is(ModItems.HOVER_UPGRADE.get());
                 } else if (isHelmetPresent()) {
                     return stack.is(ModItems.WATER_BREATHING_UPGRADE.get());
+                } else if (isLeggingsPresent()) {
+                    return stack.is(ModItems.PHASE_UPGRADE.get());
                 }
                 return false;
             }
@@ -149,7 +152,11 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
     }
 
     public boolean isGearPresent() {
-        return isRotorpackPresent() || isHelmetPresent();
+        return isRotorpackPresent() || isHelmetPresent() || isLeggingsPresent();
+    }
+
+    public boolean isLeggingsPresent() {
+        return this.gearContainer.getItem(0).getItem() instanceof ExoLegsItem;
     }
 
     public boolean isRotorpackPresent() {
@@ -216,6 +223,14 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
 
                 // 3. Armor
                 populateArmorSlot(AceHelmetItem.getArmorUpgrade(gear));
+            } else if (gear.getItem() instanceof ExoLegsItem) {
+                if (ExoLegsItem.hasPhaseUpgrade(gear)) {
+                    this.upgradesContainer.setItem(0, new ItemStack(ModItems.PHASE_UPGRADE.get()));
+                } else {
+                    this.upgradesContainer.setItem(0, ItemStack.EMPTY);
+                }
+                this.upgradesContainer.setItem(1, ItemStack.EMPTY);
+                populateArmorSlot(ExoLegsItem.getArmorUpgrade(gear));
             } else {
                 // Gear removed: clear upgrade slots
                 this.upgradesContainer.setItem(0, ItemStack.EMPTY);
@@ -274,6 +289,16 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
 
                 this.getSlot(GEAR_SLOT).setChanged();
                 this.broadcastChanges();
+            } else if (gear.getItem() instanceof ExoLegsItem) {
+                ItemStack phaseStack = this.upgradesContainer.getItem(0);
+                ExoLegsItem.setPhaseUpgrade(gear, phaseStack.is(ModItems.PHASE_UPGRADE.get()));
+
+                ItemStack armorStack = this.upgradesContainer.getItem(2);
+                ArmorUpgradeTier tier = getArmorTierFromItem(armorStack);
+                ExoLegsItem.setArmorUpgrade(gear, tier);
+
+                this.getSlot(GEAR_SLOT).setChanged();
+                this.broadcastChanges();
             }
         } finally {
             this.isUpdating = false;
@@ -308,7 +333,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 slot.onQuickCraft(stackInSlot, itemstack);
             } else {
                 // From player inventory into table slots
-                if (stackInSlot.getItem() instanceof RotorpackItem || stackInSlot.getItem() instanceof AceHelmetItem) {
+                if (stackInSlot.getItem() instanceof RotorpackItem || stackInSlot.getItem() instanceof AceHelmetItem || stackInSlot.getItem() instanceof ExoLegsItem) {
                     if (!this.moveItemStackTo(stackInSlot, GEAR_SLOT, GEAR_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
@@ -326,6 +351,10 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                     }
                 } else if (stackInSlot.is(ModItems.NIGHT_VISION_UPGRADE.get())) {
                     if (!isHelmetPresent() || !this.moveItemStackTo(stackInSlot, UPGRADE_2_SLOT, UPGRADE_2_SLOT + 1, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (stackInSlot.is(ModItems.PHASE_UPGRADE.get())) {
+                    if (!isLeggingsPresent() || !this.moveItemStackTo(stackInSlot, UPGRADE_1_SLOT, UPGRADE_1_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (isArmorUpgradeItem(stackInSlot)) {

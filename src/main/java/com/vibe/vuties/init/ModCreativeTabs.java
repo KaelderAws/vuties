@@ -20,12 +20,14 @@ public class ModCreativeTabs {
             .displayItems((params, output) -> {
                 output.accept(ModItems.ACE_HELMET.get());
                 output.accept(ModItems.ROTORPACK.get());
+                output.accept(ModItems.EXO_LEGS.get());
                 output.accept(ModItems.PROPELLER.get());
                 output.accept(ModItems.UPGRADE_TABLE.get());
                 output.accept(ModItems.HOVER_UPGRADE.get());
                 output.accept(ModItems.WINGS_UPGRADE.get());
                 output.accept(ModItems.WATER_BREATHING_UPGRADE.get());
                 output.accept(ModItems.NIGHT_VISION_UPGRADE.get());
+                output.accept(ModItems.PHASE_UPGRADE.get());
                 output.accept(ModItems.IRON_ARMOR_UPGRADE.get());
                 output.accept(ModItems.DIAMOND_ARMOR_UPGRADE.get());
                 output.accept(ModItems.NETHERITE_ARMOR_UPGRADE.get());
