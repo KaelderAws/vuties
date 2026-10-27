@@ -69,4 +69,21 @@ public class ModArmorMaterials {
             0.0F,
             0.0F
         ));
+
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> JET_BOOTS_MATERIAL =
+        ARMOR_MATERIALS.register("jet_boots", () -> new ArmorMaterial(
+            Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                map.put(ArmorItem.Type.BOOTS, 1);
+                map.put(ArmorItem.Type.LEGGINGS, 2);
+                map.put(ArmorItem.Type.CHESTPLATE, 2);
+                map.put(ArmorItem.Type.HELMET, 1);
+                map.put(ArmorItem.Type.BODY, 2);
+            }),
+            15,
+            SoundEvents.ARMOR_EQUIP_IRON,
+            () -> Ingredient.of(Items.IRON_INGOT),
+            List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "jet_boots"))),
+            0.0F,
+            0.0F
+        ));
 }

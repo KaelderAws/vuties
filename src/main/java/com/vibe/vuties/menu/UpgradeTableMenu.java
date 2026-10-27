@@ -4,8 +4,9 @@ import com.vibe.vuties.init.ModBlocks;
 import com.vibe.vuties.init.ModItems;
 import com.vibe.vuties.init.ModMenuTypes;
 import com.vibe.vuties.item.AceHelmetItem;
-import com.vibe.vuties.item.ExoLegsItem;
 import com.vibe.vuties.item.ArmorUpgradeTier;
+import com.vibe.vuties.item.ExoLegsItem;
+import com.vibe.vuties.item.JetBootsItem;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -46,11 +47,14 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
         this.access = access;
         this.player = playerInventory.player;
 
-        // Slot 0: Gear Slot (Rotorpack or Ace Helmet) (x = 27, y = 35)
+        // Slot 0: Gear Slot (Rotorpack, Ace Helmet, Exo Legs, Jet Boots) (x = 27, y = 35)
         this.addSlot(new Slot(this.gearContainer, 0, 27, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof RotorpackItem || stack.getItem() instanceof AceHelmetItem || stack.getItem() instanceof ExoLegsItem;
+                return stack.getItem() instanceof RotorpackItem ||
+                       stack.getItem() instanceof AceHelmetItem ||
+                       stack.getItem() instanceof ExoLegsItem ||
+                       stack.getItem() instanceof JetBootsItem;
             }
 
             @Override
@@ -65,7 +69,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             }
         });
 
-        // Slot 1: Upgrade 1 (Hover for Rotorpack / Water Breathing for Helmet) (x = 81, y = 35)
+        // Slot 1: Upgrade 1 (Hover for Rotorpack / Water Breathing for Helmet / Phase for Legs / Slide for Boots) (x = 81, y = 35)
         this.addSlot(new Slot(this.upgradesContainer, 0, 81, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
@@ -75,6 +79,8 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                     return stack.is(ModItems.WATER_BREATHING_UPGRADE.get());
                 } else if (isLeggingsPresent()) {
                     return stack.is(ModItems.PHASE_UPGRADE.get());
+                } else if (isBootsPresent()) {
+                    return stack.is(ModItems.SLIDE_UPGRADE.get());
                 }
                 return false;
             }
@@ -152,7 +158,11 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
     }
 
     public boolean isGearPresent() {
-        return isRotorpackPresent() || isHelmetPresent() || isLeggingsPresent();
+        return isRotorpackPresent() || isHelmetPresent() || isLeggingsPresent() || isBootsPresent();
+    }
+
+    public boolean isBootsPresent() {
+        return this.gearContainer.getItem(0).getItem() instanceof JetBootsItem;
     }
 
     public boolean isLeggingsPresent() {
@@ -231,6 +241,14 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 }
                 this.upgradesContainer.setItem(1, ItemStack.EMPTY);
                 populateArmorSlot(ExoLegsItem.getArmorUpgrade(gear));
+            } else if (gear.getItem() instanceof JetBootsItem) {
+                if (JetBootsItem.hasSlideUpgrade(gear)) {
+                    this.upgradesContainer.setItem(0, new ItemStack(ModItems.SLIDE_UPGRADE.get()));
+                } else {
+                    this.upgradesContainer.setItem(0, ItemStack.EMPTY);
+                }
+                this.upgradesContainer.setItem(1, ItemStack.EMPTY);
+                populateArmorSlot(JetBootsItem.getArmorUpgrade(gear));
             } else {
                 // Gear removed: clear upgrade slots
                 this.upgradesContainer.setItem(0, ItemStack.EMPTY);
@@ -299,6 +317,16 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
 
                 this.getSlot(GEAR_SLOT).setChanged();
                 this.broadcastChanges();
+            } else if (gear.getItem() instanceof JetBootsItem) {
+                ItemStack slideStack = this.upgradesContainer.getItem(0);
+                JetBootsItem.setSlideUpgrade(gear, slideStack.is(ModItems.SLIDE_UPGRADE.get()));
+
+                ItemStack armorStack = this.upgradesContainer.getItem(2);
+                ArmorUpgradeTier tier = getArmorTierFromItem(armorStack);
+                JetBootsItem.setArmorUpgrade(gear, tier);
+
+                this.getSlot(GEAR_SLOT).setChanged();
+                this.broadcastChanges();
             }
         } finally {
             this.isUpdating = false;
@@ -333,7 +361,10 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 slot.onQuickCraft(stackInSlot, itemstack);
             } else {
                 // From player inventory into table slots
-                if (stackInSlot.getItem() instanceof RotorpackItem || stackInSlot.getItem() instanceof AceHelmetItem || stackInSlot.getItem() instanceof ExoLegsItem) {
+                if (stackInSlot.getItem() instanceof RotorpackItem ||
+                    stackInSlot.getItem() instanceof AceHelmetItem ||
+                    stackInSlot.getItem() instanceof ExoLegsItem ||
+                    stackInSlot.getItem() instanceof JetBootsItem) {
                     if (!this.moveItemStackTo(stackInSlot, GEAR_SLOT, GEAR_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
@@ -355,6 +386,10 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                     }
                 } else if (stackInSlot.is(ModItems.PHASE_UPGRADE.get())) {
                     if (!isLeggingsPresent() || !this.moveItemStackTo(stackInSlot, UPGRADE_1_SLOT, UPGRADE_1_SLOT + 1, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (stackInSlot.is(ModItems.SLIDE_UPGRADE.get())) {
+                    if (!isBootsPresent() || !this.moveItemStackTo(stackInSlot, UPGRADE_1_SLOT, UPGRADE_1_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (isArmorUpgradeItem(stackInSlot)) {

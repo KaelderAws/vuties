@@ -52,4 +52,8 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> UPGRADE_PHASE =
         DATA_COMPONENTS.registerComponentType("upgrade_phase", builder ->
             builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> UPGRADE_SLIDE =
+        DATA_COMPONENTS.registerComponentType("upgrade_slide", builder ->
+            builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 }

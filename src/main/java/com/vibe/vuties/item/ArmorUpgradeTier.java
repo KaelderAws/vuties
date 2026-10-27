@@ -8,10 +8,10 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ArmorItem;
 
 public enum ArmorUpgradeTier implements StringRepresentable {
-    NONE("none", 2, 1, 2, 0.0F, 0.0F),
-    IRON("iron", 6, 2, 5, 0.0F, 0.0F),
-    DIAMOND("diamond", 8, 3, 6, 2.0F, 0.0F),
-    NETHERITE("netherite", 8, 3, 6, 3.0F, 0.1F);
+    NONE("none", 2, 1, 2, 1, 0.0F, 0.0F),
+    IRON("iron", 6, 2, 5, 2, 0.0F, 0.0F),
+    DIAMOND("diamond", 8, 3, 6, 3, 2.0F, 0.0F),
+    NETHERITE("netherite", 8, 3, 6, 3, 3.0F, 0.1F);
 
     public static final Codec<ArmorUpgradeTier> CODEC = StringRepresentable.fromEnum(ArmorUpgradeTier::values);
     public static final StreamCodec<ByteBuf, ArmorUpgradeTier> STREAM_CODEC = ByteBufCodecs.idMapper(
@@ -23,14 +23,16 @@ public enum ArmorUpgradeTier implements StringRepresentable {
     private final int armor;
     private final int helmetArmor;
     private final int leggingsArmor;
+    private final int bootsArmor;
     private final float toughness;
     private final float knockbackResistance;
 
-    ArmorUpgradeTier(String name, int armor, int helmetArmor, int leggingsArmor, float toughness, float knockbackResistance) {
+    ArmorUpgradeTier(String name, int armor, int helmetArmor, int leggingsArmor, int bootsArmor, float toughness, float knockbackResistance) {
         this.name = name;
         this.armor = armor;
         this.helmetArmor = helmetArmor;
         this.leggingsArmor = leggingsArmor;
+        this.bootsArmor = bootsArmor;
         this.toughness = toughness;
         this.knockbackResistance = knockbackResistance;
     }
@@ -52,11 +54,17 @@ public enum ArmorUpgradeTier implements StringRepresentable {
         return this.leggingsArmor;
     }
 
+    public int getBootsArmor() {
+        return this.bootsArmor;
+    }
+
     public int getArmor(ArmorItem.Type type) {
         if (type == ArmorItem.Type.HELMET) {
             return this.helmetArmor;
         } else if (type == ArmorItem.Type.LEGGINGS) {
             return this.leggingsArmor;
+        } else if (type == ArmorItem.Type.BOOTS) {
+            return this.bootsArmor;
         }
         return this.armor;
     }

@@ -3,6 +3,7 @@ package com.vibe.vuties.init;
 import com.vibe.vuties.Vuties;
 import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.ExoLegsItem;
+import com.vibe.vuties.item.JetBootsItem;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.item.UpgradeItem;
 import net.minecraft.world.item.BlockItem;
@@ -25,6 +26,13 @@ public class ModItems {
     public static final DeferredItem<ExoLegsItem> EXO_LEGS = ITEMS.registerItem("exo_legs",
         ExoLegsItem::new);
 
+    // Shock Boots
+    public static final DeferredItem<JetBootsItem> SHOCK_BOOTS = ITEMS.registerItem("shock_boots",
+        JetBootsItem::new);
+
+    public static final DeferredItem<JetBootsItem> JET_BOOTS = ITEMS.registerItem("jet_boots",
+        JetBootsItem::new);
+
     // Propeller material
     public static final DeferredItem<Item> PROPELLER = ITEMS.registerItem("propeller",
         Item::new, new Item.Properties());
@@ -45,6 +53,9 @@ public class ModItems {
     public static final DeferredItem<UpgradeItem> PHASE_UPGRADE = ITEMS.registerItem("phase_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.PHASE, p));
 
+    public static final DeferredItem<UpgradeItem> SLIDE_UPGRADE = ITEMS.registerItem("slide_upgrade",
+        p -> new UpgradeItem(UpgradeItem.Type.SLIDE, p));
+
     public static final DeferredItem<UpgradeItem> IRON_ARMOR_UPGRADE = ITEMS.registerItem("iron_armor_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.IRON_ARMOR, p));
 
@@ -54,7 +65,13 @@ public class ModItems {
     public static final DeferredItem<UpgradeItem> NETHERITE_ARMOR_UPGRADE = ITEMS.registerItem("netherite_armor_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.NETHERITE_ARMOR, p));
 
-    // Upgrade Table BlockItem
+    // Block Items
     public static final DeferredItem<BlockItem> UPGRADE_TABLE = ITEMS.registerSimpleBlockItem("upgrade_table",
         ModBlocks.UPGRADE_TABLE);
+
+    public static final DeferredItem<BlockItem> WHEEL = ITEMS.registerSimpleBlockItem("wheel",
+        ModBlocks.WHEEL);
+
+    public static final DeferredItem<BlockItem> ENERGY_CELL = ITEMS.registerSimpleBlockItem("energy_cell",
+        ModBlocks.ENERGY_CELL);
 }

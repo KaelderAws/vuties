@@ -8,6 +8,7 @@ import com.vibe.vuties.init.ModBlocks;
 import com.vibe.vuties.init.ModCapabilities;
 import com.vibe.vuties.init.ModCreativeTabs;
 import com.vibe.vuties.init.ModDataComponents;
+import com.vibe.vuties.init.ModEntityTypes;
 import com.vibe.vuties.init.ModItems;
 import com.vibe.vuties.init.ModMenuTypes;
 import com.vibe.vuties.init.ModRecipeTypes;
@@ -28,6 +29,7 @@ public class Vuties {
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
+        ModEntityTypes.ENTITY_TYPES.register(modEventBus);
         ModMenuTypes.MENUS.register(modEventBus);
         ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
         ModRecipeTypes.RECIPE_SERIALIZERS.register(modEventBus);

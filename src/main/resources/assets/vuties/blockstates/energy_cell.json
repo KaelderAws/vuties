@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "vuties:block/energy_cell"
+    }
+  }
+}

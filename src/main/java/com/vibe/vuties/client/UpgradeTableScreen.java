@@ -39,13 +39,15 @@ public class UpgradeTableScreen extends AbstractContainerScreen<UpgradeTableMenu
                     graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_water_breathing"), mouseX, mouseY);
                 } else if (this.menu.isLeggingsPresent()) {
                     graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_phase"), mouseX, mouseY);
+                } else if (this.menu.isBootsPresent()) {
+                    graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_slide"), mouseX, mouseY);
                 } else {
                     graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_hover"), mouseX, mouseY);
                 }
             } else if (slotIdx == UpgradeTableMenu.UPGRADE_2_SLOT) {
                 if (this.menu.isHelmetPresent()) {
                     graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_night_vision"), mouseX, mouseY);
-                } else if (!this.menu.isLeggingsPresent()) {
+                } else if (!this.menu.isLeggingsPresent() && !this.menu.isBootsPresent()) {
                     graphics.renderTooltip(this.font, Component.translatable("tooltip.vuties.upgrade_table.slot_wings"), mouseX, mouseY);
                 }
             } else if (slotIdx == UpgradeTableMenu.ARMOR_SLOT) {

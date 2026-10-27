@@ -1,8 +1,10 @@
 package com.vibe.vuties.network;
+import com.vibe.vuties.entity.WheelRunnerEntity;
 
 import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.ExoLegsItem;
 import com.vibe.vuties.logic.PhaseShiftManager;
+import com.vibe.vuties.logic.SlideManager;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -46,6 +48,17 @@ public class ModNetwork {
             PhaseShiftPayload.TYPE,
             PhaseShiftPayload.STREAM_CODEC,
             ModNetwork::handlePhaseShift
+        );
+
+        registrar.playToServer(
+            SlidePayload.TYPE,
+            SlidePayload.STREAM_CODEC,
+            ModNetwork::handleSlide
+        );
+        registrar.playToServer(
+            WheelRunPayload.TYPE,
+            WheelRunPayload.STREAM_CODEC,
+            ModNetwork::handleWheelRun
         );
     }
 
@@ -177,6 +190,28 @@ public class ModNetwork {
                 } else if (payload.action() == 2) {
                     PhaseShiftManager.endPhaseShift(player);
                 }
+            }
+        });
+    }
+
+    public static void handleSlide(SlidePayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player == null) return;
+
+            SlideManager.setSliding(player, payload.sliding());
+            if (payload.sliding()) {
+                player.clearFire();
+                player.resetFallDistance();
+            }
+        });
+    }
+    public static void handleWheelRun(WheelRunPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player == null) return;
+            if (player.getVehicle() instanceof WheelRunnerEntity runner) {
+                runner.updateRunningState(payload.running(), payload.sprinting());
             }
         });
     }

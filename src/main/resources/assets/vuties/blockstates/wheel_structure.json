@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "center=false": { "model": "vuties:block/wheel_structure" },
+    "center=true": { "model": "vuties:block/wheel_structure" }
+  }
+}

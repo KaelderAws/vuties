@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "vuties:block/energy_cell_side",
+    "down": "vuties:block/energy_cell_bottom",
+    "up": "vuties:block/energy_cell_top",
+    "north": "vuties:block/energy_cell_side",
+    "south": "vuties:block/energy_cell_side",
+    "east": "vuties:block/energy_cell_side",
+    "west": "vuties:block/energy_cell_side"
+  }
+}
