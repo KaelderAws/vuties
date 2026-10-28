@@ -70,8 +70,8 @@ public class ModArmorMaterials {
             0.0F
         ));
 
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> JET_BOOTS_MATERIAL =
-        ARMOR_MATERIALS.register("jet_boots", () -> new ArmorMaterial(
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> SHOCK_BOOTS_MATERIAL =
+        ARMOR_MATERIALS.register("shock_boots", () -> new ArmorMaterial(
             Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
                 map.put(ArmorItem.Type.BOOTS, 1);
                 map.put(ArmorItem.Type.LEGGINGS, 2);
@@ -82,7 +82,7 @@ public class ModArmorMaterials {
             15,
             SoundEvents.ARMOR_EQUIP_IRON,
             () -> Ingredient.of(Items.IRON_INGOT),
-            List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "jet_boots"))),
+            List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "shock_boots"))),
             0.0F,
             0.0F
         ));

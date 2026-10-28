@@ -1,0 +1,7 @@
+{
+  "parent": "vuties:block/energy_cable_side_west",
+  "textures": {
+    "particle": "vuties:block/energy_cable_glow",
+    "texture": "vuties:block/energy_cable_glow"
+  }
+}

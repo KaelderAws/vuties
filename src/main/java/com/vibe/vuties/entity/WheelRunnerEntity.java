@@ -6,18 +6,22 @@ import com.vibe.vuties.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WheelRunnerEntity extends Entity {
-    private BlockPos masterPos = BlockPos.ZERO;
+    private static final EntityDataAccessor<BlockPos> DATA_MASTER_POS =
+        SynchedEntityData.defineId(WheelRunnerEntity.class, EntityDataSerializers.BLOCK_POS);
 
     public WheelRunnerEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -27,17 +31,19 @@ public class WheelRunnerEntity extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_MASTER_POS, BlockPos.ZERO);
     }
 
     public void setMasterPos(BlockPos pos) {
-        this.masterPos = pos;
+        this.entityData.set(DATA_MASTER_POS, pos);
     }
 
     public BlockPos getMasterPos() {
-        return this.masterPos;
+        return this.entityData.get(DATA_MASTER_POS);
     }
 
     public void updateRunningState(boolean running, boolean sprinting) {
+        BlockPos masterPos = getMasterPos();
         if (!level().isClientSide && masterPos != null) {
             if (level().getBlockEntity(masterPos) instanceof WheelBlockEntity wheelBE) {
                 wheelBE.setRunnerActive(running, sprinting);
@@ -59,6 +65,14 @@ public class WheelRunnerEntity extends Entity {
     protected void positionRider(Entity passenger, Entity.MoveFunction moveFunction) {
         if (!this.hasPassenger(passenger)) return;
         moveFunction.accept(passenger, this.getX(), this.getY(), this.getZ());
+        if (passenger instanceof LivingEntity living && !(passenger instanceof Player)) {
+            living.setYRot(this.getYRot());
+            living.setYHeadRot(this.getYRot());
+            living.setYBodyRot(this.getYRot());
+            living.yRotO = this.getYRot();
+            living.yHeadRotO = this.getYRot();
+            living.yBodyRotO = this.getYRot();
+        }
     }
 
     @Override
@@ -67,6 +81,7 @@ public class WheelRunnerEntity extends Entity {
         Direction back = facing.getOpposite();
         Direction right = facing.getClockWise();
         Direction left = facing.getCounterClockWise();
+        BlockPos masterPos = getMasterPos();
 
         List<BlockPos> candidatePositions = new ArrayList<>();
         // Priority 1: Step off behind the wheel
@@ -125,6 +140,7 @@ public class WheelRunnerEntity extends Entity {
     public void tick() {
         super.tick();
 
+        BlockPos masterPos = getMasterPos();
         if (!level().isClientSide) {
             if (getPassengers().isEmpty()) {
                 discard();
@@ -138,6 +154,10 @@ public class WheelRunnerEntity extends Entity {
                 return;
             }
 
+            if (wheelBE.getRunnerEntity() != this) {
+                wheelBE.setRunnerEntity(this);
+            }
+
             setPos(masterPos.getX() + 0.5, masterPos.getY() + 1.05, masterPos.getZ() + 0.5);
             Direction facing = wheelBE.getBlockState().getValue(WheelBlock.FACING);
             setYRot(facing.toYRot());
@@ -147,6 +167,7 @@ public class WheelRunnerEntity extends Entity {
     @Override
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
+        BlockPos masterPos = getMasterPos();
         if (!level().isClientSide) {
             if (level().getBlockEntity(masterPos) instanceof WheelBlockEntity wheelBE) {
                 wheelBE.onRunnerDismounted();
@@ -158,12 +179,13 @@ public class WheelRunnerEntity extends Entity {
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         if (tag.contains("MasterX")) {
-            this.masterPos = new BlockPos(tag.getInt("MasterX"), tag.getInt("MasterY"), tag.getInt("MasterZ"));
+            setMasterPos(new BlockPos(tag.getInt("MasterX"), tag.getInt("MasterY"), tag.getInt("MasterZ")));
         }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
+        BlockPos masterPos = getMasterPos();
         if (masterPos != null) {
             tag.putInt("MasterX", masterPos.getX());
             tag.putInt("MasterY", masterPos.getY());

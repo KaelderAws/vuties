@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "vuties:block/creative_energy_cell_side",
+    "down": "vuties:block/creative_energy_cell_bottom",
+    "up": "vuties:block/creative_energy_cell_top",
+    "north": "vuties:block/creative_energy_cell_side",
+    "south": "vuties:block/creative_energy_cell_side",
+    "east": "vuties:block/creative_energy_cell_side",
+    "west": "vuties:block/creative_energy_cell_side"
+  }
+}

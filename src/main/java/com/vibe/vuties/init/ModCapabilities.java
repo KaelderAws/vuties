@@ -26,5 +26,23 @@ public class ModCapabilities {
             ModBlockEntities.ENERGY_CELL.get(),
             (be, side) -> be.getEnergyStorage(side)
         );
+
+        event.registerBlockEntity(
+            Capabilities.EnergyStorage.BLOCK,
+            ModBlockEntities.CREATIVE_ENERGY_CELL.get(),
+            (be, side) -> be.getEnergyStorage(side)
+        );
+
+        event.registerBlockEntity(
+            Capabilities.EnergyStorage.BLOCK,
+            ModBlockEntities.UPGRADE_TABLE.get(),
+            (be, side) -> be.getEnergyStorage(side)
+        );
+
+        event.registerBlockEntity(
+            Capabilities.EnergyStorage.BLOCK,
+            ModBlockEntities.ENERGY_CABLE.get(),
+            (be, side) -> be.getEnergyStorage(side)
+        );
     }
 }

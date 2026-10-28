@@ -7,15 +7,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
-public class JetBootsClientExtensions implements IClientItemExtensions {
-    public static final JetBootsClientExtensions INSTANCE = new JetBootsClientExtensions();
-    private static JetBootsGeoRenderer cachedArmorRenderer;
-    private static JetBootsItemRenderer cachedItemRenderer;
+public class ShockBootsClientExtensions implements IClientItemExtensions {
+    public static final ShockBootsClientExtensions INSTANCE = new ShockBootsClientExtensions();
+    private static ShockBootsGeoRenderer cachedArmorRenderer;
+    private static ShockBootsItemRenderer cachedItemRenderer;
 
     @Override
     public HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
         if (cachedArmorRenderer == null) {
-            cachedArmorRenderer = new JetBootsGeoRenderer();
+            cachedArmorRenderer = new ShockBootsGeoRenderer();
         }
         return cachedArmorRenderer;
     }
@@ -23,7 +23,7 @@ public class JetBootsClientExtensions implements IClientItemExtensions {
     @Override
     public BlockEntityWithoutLevelRenderer getCustomRenderer() {
         if (cachedItemRenderer == null) {
-            cachedItemRenderer = new JetBootsItemRenderer();
+            cachedItemRenderer = new ShockBootsItemRenderer();
         }
         return cachedItemRenderer;
     }

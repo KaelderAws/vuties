@@ -1,0 +1,68 @@
+{
+  "textures": {
+    "particle": "vuties:block/energy_cable",
+    "texture": "vuties:block/energy_cable"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        6,
+        6
+      ],
+      "to": [
+        6,
+        10,
+        10
+      ],
+      "faces": {
+        "west": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#texture",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            6,
+            6,
+            10
+          ],
+          "texture": "#texture"
+        },
+        "down": {
+          "uv": [
+            0,
+            6,
+            6,
+            10
+          ],
+          "texture": "#texture"
+        },
+        "north": {
+          "uv": [
+            10,
+            6,
+            16,
+            10
+          ],
+          "texture": "#texture"
+        },
+        "south": {
+          "uv": [
+            0,
+            6,
+            6,
+            10
+          ],
+          "texture": "#texture"
+        }
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 package com.vibe.vuties.logic;
 
-import com.vibe.vuties.item.JetBootsItem;
+import com.vibe.vuties.item.ShockBootsItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -39,8 +39,8 @@ public class SlideManager {
     public static boolean canSlide(Player player) {
         if (player == null || player.isSpectator()) return false;
         ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
-        if (!(feet.getItem() instanceof JetBootsItem)) return false;
-        return JetBootsItem.hasSlideUpgrade(feet);
+        if (!(feet.getItem() instanceof ShockBootsItem)) return false;
+        return ShockBootsItem.hasSlideUpgrade(feet);
     }
 
     /**
@@ -147,7 +147,7 @@ public class SlideManager {
             return;
         }
 
-        // Always extinguish fire when sliding in jet boots
+        // Always extinguish fire when sliding in shock boots
         player.clearFire();
         player.resetFallDistance();
         player.moveDist = 0.0f; // Prevent server-side walking/step sounds from triggering

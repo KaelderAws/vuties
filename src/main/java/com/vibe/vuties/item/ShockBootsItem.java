@@ -1,9 +1,9 @@
 package com.vibe.vuties.item;
 
 import com.vibe.vuties.Vuties;
-import com.vibe.vuties.client.JetBootsClientExtensions;
-import com.vibe.vuties.client.JetBootsGeoRenderer;
-import com.vibe.vuties.client.JetBootsItemRenderer;
+import com.vibe.vuties.client.ShockBootsClientExtensions;
+import com.vibe.vuties.client.ShockBootsGeoRenderer;
+import com.vibe.vuties.client.ShockBootsItemRenderer;
 import com.vibe.vuties.init.ModArmorMaterials;
 import com.vibe.vuties.init.ModDataComponents;
 import net.minecraft.ChatFormatting;
@@ -35,7 +35,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class JetBootsItem extends ArmorItem implements GeoItem {
+public class ShockBootsItem extends ArmorItem implements GeoItem {
 
     private static final ResourceLocation ARMOR_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "boots_armor");
     private static final ResourceLocation TOUGHNESS_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "boots_armor_toughness");
@@ -43,8 +43,8 @@ public class JetBootsItem extends ArmorItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public JetBootsItem(Properties properties) {
-        super(ModArmorMaterials.JET_BOOTS_MATERIAL, ArmorItem.Type.BOOTS, properties.stacksTo(1));
+    public ShockBootsItem(Properties properties) {
+        super(ModArmorMaterials.SHOCK_BOOTS_MATERIAL, ArmorItem.Type.BOOTS, properties.stacksTo(1));
     }
 
     public static ArmorUpgradeTier getArmorUpgrade(ItemStack stack) {
@@ -98,15 +98,15 @@ public class JetBootsItem extends ArmorItem implements GeoItem {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         // Fall damage cancellation note
-        tooltip.add(Component.translatable("tooltip.vuties.jet_boots.fall_damage")
+        tooltip.add(Component.translatable("tooltip.vuties.shock_boots.fall_damage")
                 .withStyle(ChatFormatting.GREEN));
 
         boolean hasSlide = hasSlideUpgrade(stack);
         if (hasSlide) {
-            tooltip.add(Component.translatable("tooltip.vuties.jet_boots.ability")
+            tooltip.add(Component.translatable("tooltip.vuties.shock_boots.ability")
                     .withStyle(ChatFormatting.GOLD));
         } else {
-            tooltip.add(Component.translatable("tooltip.vuties.jet_boots.no_slide_upgrade")
+            tooltip.add(Component.translatable("tooltip.vuties.shock_boots.no_slide_upgrade")
                     .withStyle(ChatFormatting.DARK_GRAY));
         }
 
@@ -117,11 +117,11 @@ public class JetBootsItem extends ArmorItem implements GeoItem {
             case NETHERITE -> "netherite";
             default -> "none";
         };
-        tooltip.add(Component.translatable("tooltip.vuties.jet_boots.armor_tier." + tierKey));
+        tooltip.add(Component.translatable("tooltip.vuties.shock_boots.armor_tier." + tierKey));
 
         if (hasSlide) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.translatable("tooltip.vuties.jet_boots.controls")
+            tooltip.add(Component.translatable("tooltip.vuties.shock_boots.controls")
                     .withStyle(ChatFormatting.DARK_GRAY));
         }
 
@@ -144,13 +144,13 @@ public class JetBootsItem extends ArmorItem implements GeoItem {
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
         consumer.accept(new GeoRenderProvider() {
-            private JetBootsGeoRenderer armorRenderer;
-            private JetBootsItemRenderer itemRenderer;
+            private ShockBootsGeoRenderer armorRenderer;
+            private ShockBootsItemRenderer itemRenderer;
 
             @Override
             public <T extends LivingEntity> HumanoidModel<?> getGeoArmorRenderer(@Nullable T livingEntity, ItemStack itemStack, @Nullable EquipmentSlot equipmentSlot, @Nullable HumanoidModel<T> original) {
                 if (this.armorRenderer == null) {
-                    this.armorRenderer = new JetBootsGeoRenderer();
+                    this.armorRenderer = new ShockBootsGeoRenderer();
                 }
                 return this.armorRenderer;
             }
@@ -158,7 +158,7 @@ public class JetBootsItem extends ArmorItem implements GeoItem {
             @Override
             public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
                 if (this.itemRenderer == null) {
-                    this.itemRenderer = new JetBootsItemRenderer();
+                    this.itemRenderer = new ShockBootsItemRenderer();
                 }
                 return this.itemRenderer;
             }
@@ -167,6 +167,6 @@ public class JetBootsItem extends ArmorItem implements GeoItem {
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(JetBootsClientExtensions.INSTANCE);
+        consumer.accept(ShockBootsClientExtensions.INSTANCE);
     }
 }

@@ -2,10 +2,14 @@ package com.vibe.vuties.block;
 
 import com.mojang.serialization.MapCodec;
 import com.vibe.vuties.block.entity.EnergyCellBlockEntity;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -13,6 +17,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class EnergyCellBlock extends BaseEntityBlock {
     public static final MapCodec<EnergyCellBlock> CODEC = simpleCodec(EnergyCellBlock::new);
@@ -70,5 +76,13 @@ public class EnergyCellBlock extends BaseEntityBlock {
             return max > 0 ? (int) Math.floor((double) stored / max * 15.0) : 0;
         }
         return 0;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        tooltipComponents.add(Component.translatable("tooltip.vuties.energy_cell.desc").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.vuties.energy_cell.capacity").withStyle(ChatFormatting.AQUA));
+        tooltipComponents.add(Component.translatable("tooltip.vuties.energy_cell.transfer").withStyle(ChatFormatting.GREEN));
     }
 }

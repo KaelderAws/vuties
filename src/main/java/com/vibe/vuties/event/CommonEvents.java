@@ -1,15 +1,20 @@
 package com.vibe.vuties.event;
 
 import com.vibe.vuties.Vuties;
+import com.vibe.vuties.block.entity.WheelBlockEntity;
+import com.vibe.vuties.entity.WheelRunnerEntity;
 import com.vibe.vuties.item.AceHelmetItem;
-import com.vibe.vuties.item.JetBootsItem;
+import com.vibe.vuties.item.ShockBootsItem;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.logic.PhaseShiftManager;
 import com.vibe.vuties.logic.SlideManager;
+import net.minecraft.core.BlockPos;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -20,6 +25,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = Vuties.MODID)
@@ -61,9 +67,9 @@ public class CommonEvents {
                 return;
             }
 
-            // Реактивные ботинки полностью нивелируют любой урон от падения
+            // Шок-ботинки полностью нивелируют любой урон от падения
             ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
-            if (feet.getItem() instanceof JetBootsItem) {
+            if (feet.getItem() instanceof ShockBootsItem) {
                 event.setCanceled(true);
                 return;
             }
@@ -94,9 +100,9 @@ public class CommonEvents {
             player.resetFallDistance();
         }
 
-        // Реактивные ботинки: непрерывный сброс дистанции падения
+        // Шок-ботинки: непрерывный сброс дистанции падения
         ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
-        if (feet.getItem() instanceof JetBootsItem) {
+        if (feet.getItem() instanceof ShockBootsItem) {
             player.resetFallDistance();
         }
 
@@ -140,6 +146,23 @@ public class CommonEvents {
             ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
             if (head.getItem() instanceof AceHelmetItem && AceHelmetItem.isWaterBreathingActive(head)) {
                 event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        Player player = event.getEntity();
+        if (player.isShiftKeyDown() || player.isCrouching()) {
+            if (event.getTarget() instanceof Villager && event.getTarget().getVehicle() instanceof WheelRunnerEntity runner) {
+                BlockPos masterPos = runner.getMasterPos();
+                if (masterPos != null && player.level().getBlockEntity(masterPos) instanceof WheelBlockEntity wheelBE) {
+                    if (!player.level().isClientSide()) {
+                        wheelBE.ejectRunnerWithCooldown(60);
+                    }
+                    event.setCancellationResult(InteractionResult.sidedSuccess(player.level().isClientSide()));
+                    event.setCanceled(true);
+                }
             }
         }
     }

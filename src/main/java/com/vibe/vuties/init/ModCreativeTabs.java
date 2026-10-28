@@ -26,6 +26,8 @@ public class ModCreativeTabs {
                 output.accept(ModItems.UPGRADE_TABLE.get());
                 output.accept(ModItems.WHEEL.get());
                 output.accept(ModItems.ENERGY_CELL.get());
+                output.accept(ModItems.CREATIVE_ENERGY_CELL.get());
+                output.accept(ModItems.ENERGY_CABLE.get());
                 output.accept(ModItems.HOVER_UPGRADE.get());
                 output.accept(ModItems.WINGS_UPGRADE.get());
                 output.accept(ModItems.WATER_BREATHING_UPGRADE.get());

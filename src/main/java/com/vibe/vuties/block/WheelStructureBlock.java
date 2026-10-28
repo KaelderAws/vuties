@@ -1,11 +1,15 @@
 package com.vibe.vuties.block;
 
 import com.mojang.serialization.MapCodec;
+import com.vibe.vuties.block.entity.WheelBlockEntity;
 import com.vibe.vuties.block.entity.WheelStructureBlockEntity;
 import com.vibe.vuties.init.ModBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -57,6 +61,22 @@ public class WheelStructureBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new WheelStructureBlockEntity(pos, state);
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (player.isShiftKeyDown() || player.isCrouching()) {
+            if (level.getBlockEntity(pos) instanceof WheelStructureBlockEntity subBE && subBE.getMasterPos() != null) {
+                BlockPos masterPos = subBE.getMasterPos();
+                if (level.getBlockEntity(masterPos) instanceof WheelBlockEntity wheelBE && wheelBE.hasOccupant()) {
+                    if (!level.isClientSide) {
+                        wheelBE.ejectRunnerWithCooldown(60);
+                    }
+                    return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                }
+            }
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

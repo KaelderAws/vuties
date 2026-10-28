@@ -1,6 +1,8 @@
 package com.vibe.vuties.init;
 
 import com.vibe.vuties.Vuties;
+import com.vibe.vuties.block.CreativeEnergyCellBlock;
+import com.vibe.vuties.block.EnergyCableBlock;
 import com.vibe.vuties.block.EnergyCellBlock;
 import com.vibe.vuties.block.UpgradeTableBlock;
 import com.vibe.vuties.block.WheelBlock;
@@ -28,4 +30,13 @@ public class ModBlocks {
     public static final DeferredBlock<EnergyCellBlock> ENERGY_CELL = BLOCKS.registerBlock("energy_cell",
         EnergyCellBlock::new,
         BlockBehaviour.Properties.of().strength(3.5F).sound(SoundType.METAL));
+
+    public static final DeferredBlock<CreativeEnergyCellBlock> CREATIVE_ENERGY_CELL = BLOCKS.registerBlock("creative_energy_cell",
+        CreativeEnergyCellBlock::new,
+        BlockBehaviour.Properties.of().strength(-1.0F, 3600000.0F).sound(SoundType.METAL).noLootTable());
+
+    public static final DeferredBlock<EnergyCableBlock> ENERGY_CABLE = BLOCKS.registerBlock("energy_cable",
+        EnergyCableBlock::new,
+        BlockBehaviour.Properties.of().strength(1.0F).sound(SoundType.METAL).noOcclusion()
+            .lightLevel(state -> state.getValue(EnergyCableBlock.CONDUCTING) ? 12 : 0));
 }

@@ -85,7 +85,8 @@ public class ClientSlideHandler {
     private static float prevRollTilt = 0.0f;
     private static float targetRollTilt = 0.0f;
 
-    // Медленная и стабильная анимация скольжения ног (cadence)
+    // Анимация скольжения ног (cadence)
+    private static final float SLIDE_LIMB_STEP = 0.17f;
     private static float slideLimbPos = 0.0f;
 
     // Рефлексия WalkAnimationState для управления перебором ног
@@ -359,7 +360,7 @@ public class ClientSlideHandler {
             recordSkidNode(player);
 
             // 4. Плавное движение ног и подавление тряски камеры
-            slideLimbPos += 0.08f;
+            slideLimbPos += SLIDE_LIMB_STEP;
             player.bob = 0.0f;
             player.oBob = 0.0f;
             player.walkDist = player.walkDistO;
@@ -416,7 +417,7 @@ public class ClientSlideHandler {
         float renderRoll = Mth.lerp(partialTick, prevRollTilt, currentRollTilt);
 
         // Интерполяция угла взмаха ног в точном соответствии с HumanoidModel
-        float limbPos = (slideLimbPos - 0.08f) + 0.08f * partialTick;
+        float limbPos = (slideLimbPos - SLIDE_LIMB_STEP) + SLIDE_LIMB_STEP * partialTick;
         float limbSpeed = 0.26f;
 
         float rightLegPitch = Mth.cos(limbPos * 0.6662F) * 1.4F * limbSpeed;

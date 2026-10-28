@@ -1,7 +1,10 @@
 package com.vibe.vuties.init;
 
 import com.vibe.vuties.Vuties;
+import com.vibe.vuties.block.entity.CreativeEnergyCellBlockEntity;
+import com.vibe.vuties.block.entity.EnergyCableBlockEntity;
 import com.vibe.vuties.block.entity.EnergyCellBlockEntity;
+import com.vibe.vuties.block.entity.UpgradeTableBlockEntity;
 import com.vibe.vuties.block.entity.WheelBlockEntity;
 import com.vibe.vuties.block.entity.WheelStructureBlockEntity;
 import net.minecraft.core.registries.Registries;
@@ -12,6 +15,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Vuties.MODID);
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<UpgradeTableBlockEntity>> UPGRADE_TABLE =
+            BLOCK_ENTITIES.register("upgrade_table", () ->
+                    BlockEntityType.Builder.of(UpgradeTableBlockEntity::new, ModBlocks.UPGRADE_TABLE.get()).build(null));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WheelBlockEntity>> WHEEL =
             BLOCK_ENTITIES.register("wheel", () ->
@@ -24,4 +31,12 @@ public class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyCellBlockEntity>> ENERGY_CELL =
             BLOCK_ENTITIES.register("energy_cell", () ->
                     BlockEntityType.Builder.of(EnergyCellBlockEntity::new, ModBlocks.ENERGY_CELL.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeEnergyCellBlockEntity>> CREATIVE_ENERGY_CELL =
+            BLOCK_ENTITIES.register("creative_energy_cell", () ->
+                    BlockEntityType.Builder.of(CreativeEnergyCellBlockEntity::new, ModBlocks.CREATIVE_ENERGY_CELL.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyCableBlockEntity>> ENERGY_CABLE =
+            BLOCK_ENTITIES.register("energy_cable", () ->
+                    BlockEntityType.Builder.of(EnergyCableBlockEntity::new, ModBlocks.ENERGY_CABLE.get()).build(null));
 }

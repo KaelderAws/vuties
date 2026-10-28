@@ -1,0 +1,128 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "conducting": "false"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_core"
+      }
+    },
+    {
+      "when": {
+        "conducting": "true"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_core_glow"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "conducting": "false"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_down"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "conducting": "true"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_down_glow"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "conducting": "false"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_up"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "conducting": "true"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_up_glow"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "conducting": "false"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_north"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "conducting": "true"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_north_glow"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "conducting": "false"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_south"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "conducting": "true"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_south_glow"
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "conducting": "false"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_west"
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "conducting": "true"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_west_glow"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "conducting": "false"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_east"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "conducting": "true"
+      },
+      "apply": {
+        "model": "vuties:block/energy_cable_side_east_glow"
+      }
+    }
+  ]
+}

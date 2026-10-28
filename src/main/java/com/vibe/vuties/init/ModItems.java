@@ -3,7 +3,7 @@ package com.vibe.vuties.init;
 import com.vibe.vuties.Vuties;
 import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.ExoLegsItem;
-import com.vibe.vuties.item.JetBootsItem;
+import com.vibe.vuties.item.ShockBootsItem;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.item.UpgradeItem;
 import net.minecraft.world.item.BlockItem;
@@ -27,11 +27,8 @@ public class ModItems {
         ExoLegsItem::new);
 
     // Shock Boots
-    public static final DeferredItem<JetBootsItem> SHOCK_BOOTS = ITEMS.registerItem("shock_boots",
-        JetBootsItem::new);
-
-    public static final DeferredItem<JetBootsItem> JET_BOOTS = ITEMS.registerItem("jet_boots",
-        JetBootsItem::new);
+    public static final DeferredItem<ShockBootsItem> SHOCK_BOOTS = ITEMS.registerItem("shock_boots",
+        ShockBootsItem::new);
 
     // Propeller material
     public static final DeferredItem<Item> PROPELLER = ITEMS.registerItem("propeller",
@@ -74,4 +71,10 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> ENERGY_CELL = ITEMS.registerSimpleBlockItem("energy_cell",
         ModBlocks.ENERGY_CELL);
+
+    public static final DeferredItem<BlockItem> CREATIVE_ENERGY_CELL = ITEMS.registerSimpleBlockItem("creative_energy_cell",
+        ModBlocks.CREATIVE_ENERGY_CELL);
+
+    public static final DeferredItem<BlockItem> ENERGY_CABLE = ITEMS.registerSimpleBlockItem("energy_cable",
+        ModBlocks.ENERGY_CABLE);
 }

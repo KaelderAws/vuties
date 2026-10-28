@@ -1,6 +1,6 @@
 package com.vibe.vuties.client;
 
-import com.vibe.vuties.item.JetBootsItem;
+import com.vibe.vuties.item.ShockBootsItem;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -11,14 +11,14 @@ import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 import software.bernie.geckolib.util.RenderUtil;
 
-public class JetBootsGeoRenderer extends GeoArmorRenderer<JetBootsItem> {
+public class ShockBootsGeoRenderer extends GeoArmorRenderer<ShockBootsItem> {
 
-    public JetBootsGeoRenderer() {
-        super(new JetBootsGeoModel());
+    public ShockBootsGeoRenderer() {
+        super(new ShockBootsGeoModel());
     }
 
     @Override
-    public RenderType getRenderType(JetBootsItem animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
+    public RenderType getRenderType(ShockBootsItem animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityCutoutNoCull(texture);
     }
 
