@@ -20,7 +20,6 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -285,12 +284,7 @@ public class ClientSlideHandler {
                 SlideManager.setSliding(player, true);
                 PacketDistributor.sendToServer(new SlidePayload(true));
                 // Звук старта реактивного скольжения (один раз при включении)
-                player.level().playLocalSound(
-                    player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS,
-                    0.28F, 1.35F, false
-                );
-            }
+                }
 
             // 1. Глиссирование по воде и лаве (без погружения)
             SlideManager.applyLiquidSkimming(player);

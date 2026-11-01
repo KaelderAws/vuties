@@ -8,12 +8,11 @@ import com.vibe.vuties.init.ModMenuTypes;
 import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.ArmorUpgradeTier;
 import com.vibe.vuties.item.ExoLegsItem;
+import com.vibe.vuties.item.GauntletItem;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.item.ShockBootsItem;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -95,7 +94,8 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 return stack.getItem() instanceof RotorpackItem ||
                        stack.getItem() instanceof AceHelmetItem ||
                        stack.getItem() instanceof ExoLegsItem ||
-                       stack.getItem() instanceof ShockBootsItem;
+                       stack.getItem() instanceof ShockBootsItem ||
+                       stack.getItem() instanceof GauntletItem;
             }
 
             @Override
@@ -276,6 +276,8 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             return stack.is(ModItems.PHASE_UPGRADE.get());
         } else if (gear.getItem() instanceof ShockBootsItem) {
             return stack.is(ModItems.SLIDE_UPGRADE.get());
+        } else if (gear.getItem() instanceof GauntletItem) {
+            return stack.is(ModItems.DRILL_UPGRADE.get());
         }
         return false;
     }
@@ -348,6 +350,11 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.SLIDE_UPGRADE.get()));
             }
             populateArmorInNextSlot(ShockBootsItem.getArmorUpgrade(gear), nextSlot);
+        } else if (gear.getItem() instanceof GauntletItem) {
+            if (GauntletItem.hasDrillUpgrade(gear)) {
+                this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.DRILL_UPGRADE.get()));
+            }
+            populateArmorInNextSlot(GauntletItem.getArmorUpgrade(gear), nextSlot);
         }
 
         // Track what's currently installed on the gear
@@ -397,6 +404,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             boolean hasNightVision = false;
             boolean hasPhase = false;
             boolean hasSlide = false;
+            boolean hasDrill = false;
             ArmorUpgradeTier armorTier = ArmorUpgradeTier.NONE;
 
             Set<String> newInstalled = new HashSet<>();
@@ -412,6 +420,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 if (stack.is(ModItems.NIGHT_VISION_UPGRADE.get())) hasNightVision = true;
                 if (stack.is(ModItems.PHASE_UPGRADE.get())) hasPhase = true;
                 if (stack.is(ModItems.SLIDE_UPGRADE.get())) hasSlide = true;
+                if (stack.is(ModItems.DRILL_UPGRADE.get())) hasDrill = true;
                 if (isArmorUpgradeItem(stack)) {
                     armorTier = getArmorTierFromItem(stack);
                 }
@@ -434,6 +443,9 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             } else if (gear.getItem() instanceof ShockBootsItem) {
                 ShockBootsItem.setSlideUpgrade(gear, hasSlide);
                 ShockBootsItem.setArmorUpgrade(gear, armorTier);
+            } else if (gear.getItem() instanceof GauntletItem) {
+                GauntletItem.setDrillUpgrade(gear, hasDrill);
+                GauntletItem.setArmorUpgrade(gear, armorTier);
             }
 
             if (tableBE != null && !player.level().isClientSide) {
@@ -485,7 +497,8 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 if (stackInSlot.getItem() instanceof RotorpackItem ||
                     stackInSlot.getItem() instanceof AceHelmetItem ||
                     stackInSlot.getItem() instanceof ExoLegsItem ||
-                    stackInSlot.getItem() instanceof ShockBootsItem) {
+                    stackInSlot.getItem() instanceof ShockBootsItem ||
+                    stackInSlot.getItem() instanceof GauntletItem) {
                     if (!this.slots.get(GEAR_SLOT).hasItem()) {
                         if (this.moveItemStackTo(stackInSlot, GEAR_SLOT, GEAR_SLOT + 1, false)) {
                             handled = true;

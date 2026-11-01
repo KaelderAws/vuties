@@ -3,6 +3,7 @@ package com.vibe.vuties.init;
 import com.vibe.vuties.Vuties;
 import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.ExoLegsItem;
+import com.vibe.vuties.item.GauntletItem;
 import com.vibe.vuties.item.ShockBootsItem;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.item.UpgradeItem;
@@ -30,6 +31,10 @@ public class ModItems {
     public static final DeferredItem<ShockBootsItem> SHOCK_BOOTS = ITEMS.registerItem("shock_boots",
         ShockBootsItem::new);
 
+    // Gauntlet
+    public static final DeferredItem<GauntletItem> GAUNTLET = ITEMS.registerItem("gauntlet",
+        GauntletItem::new);
+
     // Propeller material
     public static final DeferredItem<Item> PROPELLER = ITEMS.registerItem("propeller",
         Item::new, new Item.Properties());
@@ -52,6 +57,9 @@ public class ModItems {
 
     public static final DeferredItem<UpgradeItem> SLIDE_UPGRADE = ITEMS.registerItem("slide_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.SLIDE, p));
+
+    public static final DeferredItem<UpgradeItem> DRILL_UPGRADE = ITEMS.registerItem("drill_upgrade",
+        p -> new UpgradeItem(UpgradeItem.Type.DRILL, p));
 
     public static final DeferredItem<UpgradeItem> IRON_ARMOR_UPGRADE = ITEMS.registerItem("iron_armor_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.IRON_ARMOR, p));

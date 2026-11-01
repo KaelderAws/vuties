@@ -1,8 +1,9 @@
 package com.vibe.vuties.network;
-import com.vibe.vuties.entity.WheelRunnerEntity;
 
+import com.vibe.vuties.entity.WheelRunnerEntity;
 import com.vibe.vuties.item.AceHelmetItem;
 import com.vibe.vuties.item.ExoLegsItem;
+import com.vibe.vuties.item.GauntletItem;
 import com.vibe.vuties.logic.PhaseShiftManager;
 import com.vibe.vuties.logic.SlideManager;
 import com.vibe.vuties.item.RotorpackItem;
@@ -55,10 +56,17 @@ public class ModNetwork {
             SlidePayload.STREAM_CODEC,
             ModNetwork::handleSlide
         );
+
         registrar.playToServer(
             WheelRunPayload.TYPE,
             WheelRunPayload.STREAM_CODEC,
             ModNetwork::handleWheelRun
+        );
+
+        registrar.playToServer(
+            GauntletModePayload.TYPE,
+            GauntletModePayload.STREAM_CODEC,
+            ModNetwork::handleGauntletMode
         );
     }
 
@@ -105,16 +113,16 @@ public class ModNetwork {
                         true
                     );
                 } else if (payload.action() == 1) {
-                    if (!RotorpackItem.hasHoverUpgrade(chest)) {
-                        player.displayClientMessage(
-                            Component.translatable("message.vuties.hover_unavailable"),
-                            true
-                        );
-                    } else {
+                    if (RotorpackItem.hasHoverUpgrade(chest)) {
                         boolean next = !RotorpackItem.isHoverMode(chest);
                         RotorpackItem.setHoverMode(chest, next);
                         player.displayClientMessage(
                             Component.translatable(next ? "message.vuties.hover_on" : "message.vuties.hover_off"),
+                            true
+                        );
+                    } else {
+                        player.displayClientMessage(
+                            Component.translatable("message.vuties.hover_unavailable"),
                             true
                         );
                     }
@@ -176,17 +184,14 @@ public class ModNetwork {
 
             ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
             if (legs.getItem() instanceof ExoLegsItem) {
-                Vec3 vec = new Vec3(payload.vx(), payload.vy(), payload.vz());
                 if (payload.action() == 0) {
-                    PhaseShiftManager.executePhaseShift(player, vec);
-                    player.setPos(player.getX() + vec.x, player.getY() + vec.y, player.getZ() + vec.z);
-                    player.noPhysics = true;
-                    player.resetFallDistance();
+                    if (PhaseShiftManager.canPhaseShift(player)) {
+                        PhaseShiftManager.executePhaseShift(player, new Vec3(payload.vx(), payload.vy(), payload.vz()));
+                    }
                 } else if (payload.action() == 1) {
-                    PhaseShiftManager.steerPhaseShift(player, vec);
-                    player.setPos(player.getX() + vec.x, player.getY() + vec.y, player.getZ() + vec.z);
-                    player.noPhysics = true;
-                    player.resetFallDistance();
+                    if (PhaseShiftManager.isPhaseShiftActive(player)) {
+                        PhaseShiftManager.steerPhaseShift(player, new Vec3(payload.vx(), payload.vy(), payload.vz()));
+                    }
                 } else if (payload.action() == 2) {
                     PhaseShiftManager.endPhaseShift(player);
                 }
@@ -206,12 +211,28 @@ public class ModNetwork {
             }
         });
     }
+
     public static void handleWheelRun(WheelRunPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             Player player = context.player();
             if (player == null) return;
             if (player.getVehicle() instanceof WheelRunnerEntity runner) {
                 runner.updateRunningState(payload.running(), payload.sprinting());
+            }
+        });
+    }
+
+    public static void handleGauntletMode(GauntletModePayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player == null) return;
+
+            ItemStack stack = payload.handSlot() == 0 ? player.getMainHandItem() : player.getOffhandItem();
+            if (stack.getItem() instanceof GauntletItem) {
+                if (payload.mode() == GauntletItem.MODE_DRILL && !GauntletItem.hasDrillUpgrade(stack)) {
+                    return;
+                }
+                GauntletItem.setMode(stack, payload.mode());
             }
         });
     }

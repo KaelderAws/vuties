@@ -4,6 +4,7 @@ import com.vibe.vuties.Vuties;
 import com.vibe.vuties.block.entity.WheelBlockEntity;
 import com.vibe.vuties.entity.WheelRunnerEntity;
 import com.vibe.vuties.item.AceHelmetItem;
+import com.vibe.vuties.item.GauntletItem;
 import com.vibe.vuties.item.ShockBootsItem;
 import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.logic.PhaseShiftManager;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -25,6 +27,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
@@ -163,6 +166,35 @@ public class CommonEvents {
                     event.setCancellationResult(InteractionResult.sidedSuccess(player.level().isClientSide()));
                     event.setCanceled(true);
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
+        Player player = event.getEntity();
+        ItemStack held = player.getMainHandItem();
+        if (held.getItem() instanceof GauntletItem && GauntletItem.isDrillActive(held)) {
+            BlockPos pos = event.getPosition().orElse(BlockPos.ZERO);
+            BlockState state = event.getState();
+            // Bedrock and unbreakable blocks can never be broken
+            if (state.getDestroySpeed(player.level(), pos) < 0) {
+                event.setCanceled(true);
+                return;
+            }
+
+            // Both client and server agree on identical speed to prevent ghost blocks
+            event.setNewSpeed(35.0F);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onHarvestCheck(PlayerEvent.HarvestCheck event) {
+        Player player = event.getEntity();
+        ItemStack held = player.getMainHandItem();
+        if (held.getItem() instanceof GauntletItem && GauntletItem.isDrillActive(held)) {
+            if (event.getTargetBlock().getDestroySpeed(player.level(), BlockPos.ZERO) >= 0) {
+                event.setCanHarvest(true);
             }
         }
     }

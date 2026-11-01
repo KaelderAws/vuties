@@ -45,4 +45,12 @@ public class ModKeyMappings {
         GLFW.GLFW_KEY_R,
         "key.categories.vuties"
     );
+
+    public static final KeyMapping GAUNTLET_MENU = new KeyMapping(
+        "key.vuties.gauntlet_menu",
+        KeyConflictContext.IN_GAME,
+        InputConstants.Type.KEYSYM,
+        GLFW.GLFW_KEY_LEFT_ALT,
+        "key.categories.vuties"
+    );
 }

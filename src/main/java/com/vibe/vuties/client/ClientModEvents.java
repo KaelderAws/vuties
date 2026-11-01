@@ -6,6 +6,8 @@ import com.vibe.vuties.init.ModBlockEntities;
 import com.vibe.vuties.init.ModEntityTypes;
 import com.vibe.vuties.init.ModMenuTypes;
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.api.distmarker.Dist;
@@ -27,6 +29,7 @@ public class ClientModEvents {
         event.register(ModKeyMappings.TOGGLE_HELMET);
         event.register(ModKeyMappings.TOGGLE_NIGHT_VISION);
         event.register(ModKeyMappings.PHASE_SHIFT);
+        event.register(ModKeyMappings.GAUNTLET_MENU);
     }
 
     @SubscribeEvent
@@ -38,6 +41,16 @@ public class ClientModEvents {
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.WHEEL.get(), context -> new WheelGeoRenderer());
         event.registerEntityRenderer(ModEntityTypes.WHEEL_RUNNER.get(), NoopRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void addLayers(EntityRenderersEvent.AddLayers event) {
+        for (PlayerSkin.Model skin : event.getSkins()) {
+            PlayerRenderer renderer = event.getSkin(skin);
+            if (renderer != null) {
+                renderer.addLayer(new GauntletPlayerLayer(renderer));
+            }
+        }
     }
 
     @SubscribeEvent

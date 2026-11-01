@@ -17,6 +17,7 @@ public class UpgradeItem extends Item {
         NIGHT_VISION("night_vision"),
         PHASE("phase"),
         SLIDE("slide"),
+        DRILL("drill"),
         IRON_ARMOR("iron_armor"),
         DIAMOND_ARMOR("diamond_armor"),
         NETHERITE_ARMOR("netherite_armor");

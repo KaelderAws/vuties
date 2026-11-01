@@ -22,6 +22,7 @@ public class ModCreativeTabs {
                 output.accept(ModItems.ROTORPACK.get());
                 output.accept(ModItems.EXO_LEGS.get());
                 output.accept(ModItems.SHOCK_BOOTS.get());
+                output.accept(ModItems.GAUNTLET.get());
                 output.accept(ModItems.PROPELLER.get());
                 output.accept(ModItems.UPGRADE_TABLE.get());
                 output.accept(ModItems.WHEEL.get());
@@ -34,6 +35,7 @@ public class ModCreativeTabs {
                 output.accept(ModItems.NIGHT_VISION_UPGRADE.get());
                 output.accept(ModItems.PHASE_UPGRADE.get());
                 output.accept(ModItems.SLIDE_UPGRADE.get());
+                output.accept(ModItems.DRILL_UPGRADE.get());
                 output.accept(ModItems.IRON_ARMOR_UPGRADE.get());
                 output.accept(ModItems.DIAMOND_ARMOR_UPGRADE.get());
                 output.accept(ModItems.NETHERITE_ARMOR_UPGRADE.get());

@@ -13,7 +13,6 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -387,18 +386,7 @@ public class WheelBlockEntity extends BlockEntity implements GeoBlockEntity {
             be.riderLimbPos += be.rotationSpeed * 0.055f;
         }
 
-        if (be.rotationSpeed > 1.0f && level.random.nextInt(6) == 0) {
-            level.playLocalSound(
-                pos.getX() + 0.5,
-                pos.getY() + 0.5,
-                pos.getZ() + 0.5,
-                SoundEvents.WOOD_STEP,
-                SoundSource.BLOCKS,
-                0.3f,
-                0.85f + (be.rotationSpeed / 30.0f),
-                false
-            );
-        }
+        
     }
 
     @Override

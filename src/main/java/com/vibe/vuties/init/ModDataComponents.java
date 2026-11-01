@@ -56,4 +56,12 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> UPGRADE_SLIDE =
         DATA_COMPONENTS.registerComponentType("upgrade_slide", builder ->
             builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> UPGRADE_DRILL =
+        DATA_COMPONENTS.registerComponentType("upgrade_drill", builder ->
+            builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> GAUNTLET_MODE =
+        DATA_COMPONENTS.registerComponentType("gauntlet_mode", builder ->
+            builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 }

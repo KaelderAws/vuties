@@ -3,7 +3,6 @@ package com.vibe.vuties.logic;
 import com.vibe.vuties.init.ModItems;
 import com.vibe.vuties.item.ExoLegsItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -57,14 +56,7 @@ public class PhaseShiftManager {
         player.getCooldowns().addCooldown(ModItems.EXO_LEGS.get(), COOLDOWN_TICKS);
         activePhases.put(player.getUUID(), PHASE_DURATION_TICKS);
 
-        // Звуки квантового фазового сдвига
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.7F);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.2F, 1.7F);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ILLUSIONER_MIRROR_MOVE, SoundSource.PLAYERS, 0.9F, 1.5F);
-    }
+        }
 
     public static void steerPhaseShift(Player player, Vec3 movement) {
         if (player == null) return;

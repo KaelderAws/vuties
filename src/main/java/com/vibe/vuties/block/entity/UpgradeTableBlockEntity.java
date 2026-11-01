@@ -9,7 +9,6 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
@@ -121,9 +120,7 @@ public class UpgradeTableBlockEntity extends BlockEntity {
         this.installCooldown = INSTALL_COOLDOWN_TICKS;
         this.maxCooldown = INSTALL_COOLDOWN_TICKS;
         setChanged();
-        if (level != null && !level.isClientSide) {
-            level.playSound(null, worldPosition, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.6f, 1.4f);
-        }
+        
     }
 
     public ItemStack getGearItem() {
@@ -139,9 +136,7 @@ public class UpgradeTableBlockEntity extends BlockEntity {
         if (be.installCooldown > 0) {
             be.installCooldown--;
             be.setChanged();
-            if (be.installCooldown == 0) {
-                level.playSound(null, pos, SoundEvents.SMITHING_TABLE_USE, SoundSource.BLOCKS, 0.7f, 1.0f);
-            }
+            
         }
 
         // Pull energy from adjacent energy-capable blocks (Energy Cell, etc.)
