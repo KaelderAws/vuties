@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.vibe.vuties.item.RotorpackItem;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
@@ -20,6 +21,22 @@ public class RotorpackGeoRenderer extends GeoArmorRenderer<RotorpackItem> {
         // Наплечники ранца (броня на плечах) гарантированно видимы на персонаже
         getGeoModel().getBone("armorRightArm").ifPresent(b -> b.setHidden(false));
         getGeoModel().getBone("armorLeftArm").ifPresent(b -> b.setHidden(false));
+
+        if (getCurrentEntity() instanceof Player player) {
+            boolean rDig = ClientDrillHandler.isRightArmDigging(player);
+            boolean lDig = ClientDrillHandler.isLeftArmDigging(player);
+
+            if (rDig) {
+                float aimX = ClientDrillHandler.getAimX(player);
+                float aimY = ClientDrillHandler.getAimY(player, partialTick);
+                getGeoModel().getBone("armorRightArm").ifPresent(b -> b.updateRotation(-aimX, -aimY, 0.0f));
+            }
+            if (lDig) {
+                float aimX = ClientDrillHandler.getAimX(player);
+                float aimY = ClientDrillHandler.getAimY(player, partialTick);
+                getGeoModel().getBone("armorLeftArm").ifPresent(b -> b.updateRotation(-aimX, -aimY, 0.0f));
+            }
+        }
 
         ItemStack stack = getCurrentStack();
         boolean hasWings = stack != null && RotorpackItem.hasWingsUpgrade(stack);

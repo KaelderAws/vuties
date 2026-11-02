@@ -214,9 +214,7 @@ public class EnergyCableNetwork {
 
     private void updateConductingVisual(Level level, boolean conducting) {
         this.isConducting = conducting;
-        // Iterate over a snapshot list of positions to be 100% thread/concurrent-safe
-        List<BlockPos> positions = new ArrayList<>(cablePositions);
-        for (BlockPos pos : positions) {
+        for (BlockPos pos : this.cablePositions) {
             if (!level.isLoaded(pos)) continue;
             BlockState state = level.getBlockState(pos);
             if (state.getBlock() instanceof EnergyCableBlock && state.getValue(EnergyCableBlock.CONDUCTING) != conducting) {

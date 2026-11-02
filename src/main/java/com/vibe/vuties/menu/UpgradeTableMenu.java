@@ -331,7 +331,6 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             if (RotorpackItem.hasWingsUpgrade(gear)) {
                 this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.WINGS_UPGRADE.get()));
             }
-            populateArmorInNextSlot(RotorpackItem.getArmorUpgrade(gear), nextSlot);
         } else if (gear.getItem() instanceof AceHelmetItem) {
             if (AceHelmetItem.hasWaterBreathingUpgrade(gear)) {
                 this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.WATER_BREATHING_UPGRADE.get()));
@@ -339,23 +338,20 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             if (AceHelmetItem.hasNightVisionUpgrade(gear)) {
                 this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.NIGHT_VISION_UPGRADE.get()));
             }
-            populateArmorInNextSlot(AceHelmetItem.getArmorUpgrade(gear), nextSlot);
         } else if (gear.getItem() instanceof ExoLegsItem) {
             if (ExoLegsItem.hasPhaseUpgrade(gear)) {
                 this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.PHASE_UPGRADE.get()));
             }
-            populateArmorInNextSlot(ExoLegsItem.getArmorUpgrade(gear), nextSlot);
         } else if (gear.getItem() instanceof ShockBootsItem) {
             if (ShockBootsItem.hasSlideUpgrade(gear)) {
                 this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.SLIDE_UPGRADE.get()));
             }
-            populateArmorInNextSlot(ShockBootsItem.getArmorUpgrade(gear), nextSlot);
         } else if (gear.getItem() instanceof GauntletItem) {
             if (GauntletItem.hasDrillUpgrade(gear)) {
                 this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.DRILL_UPGRADE.get()));
             }
-            populateArmorInNextSlot(GauntletItem.getArmorUpgrade(gear), nextSlot);
         }
+        populateArmorInNextSlot(ArmorUpgradeTier.get(gear), nextSlot);
 
         // Track what's currently installed on the gear
         for (int i = 0; i < 6; i++) {
@@ -432,21 +428,17 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             if (gear.getItem() instanceof RotorpackItem) {
                 RotorpackItem.setHoverUpgrade(gear, hasHover);
                 RotorpackItem.setWingsUpgrade(gear, hasWings);
-                RotorpackItem.setArmorUpgrade(gear, armorTier);
             } else if (gear.getItem() instanceof AceHelmetItem) {
                 AceHelmetItem.setWaterBreathingUpgrade(gear, hasWaterBreathing);
                 AceHelmetItem.setNightVisionUpgrade(gear, hasNightVision);
-                AceHelmetItem.setArmorUpgrade(gear, armorTier);
             } else if (gear.getItem() instanceof ExoLegsItem) {
                 ExoLegsItem.setPhaseUpgrade(gear, hasPhase);
-                ExoLegsItem.setArmorUpgrade(gear, armorTier);
             } else if (gear.getItem() instanceof ShockBootsItem) {
                 ShockBootsItem.setSlideUpgrade(gear, hasSlide);
-                ShockBootsItem.setArmorUpgrade(gear, armorTier);
             } else if (gear.getItem() instanceof GauntletItem) {
                 GauntletItem.setDrillUpgrade(gear, hasDrill);
-                GauntletItem.setArmorUpgrade(gear, armorTier);
             }
+            ArmorUpgradeTier.set(gear, armorTier);
 
             if (tableBE != null && !player.level().isClientSide) {
                 tableBE.setGearItem(gear.copy());

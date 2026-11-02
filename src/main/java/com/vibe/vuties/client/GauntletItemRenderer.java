@@ -7,11 +7,9 @@ import com.vibe.vuties.item.GauntletItem;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
@@ -21,11 +19,6 @@ public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
 
     public GauntletItemRenderer() {
         super(new GauntletGeoModel());
-    }
-
-    @Override
-    public RenderType getRenderType(GauntletItem animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityCutoutNoCull(texture);
     }
 
     @Override
@@ -45,7 +38,14 @@ public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
 
         ItemStack stack = getCurrentItemStack();
         boolean drillActive = stack != null && GauntletItem.isDrillActive(stack);
-        float thrust = drillActive ? ClientDrillHandler.getInterpolatedThrust(partialTick) : 0.0f;
+        float thrust = 0.0f;
+        if (drillActive) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_LEFT_HAND) {
+                thrust = ClientDrillHandler.getInterpolatedLeftThrust(partialTick);
+            } else {
+                thrust = ClientDrillHandler.getInterpolatedRightThrust(partialTick);
+            }
+        }
 
         if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
             // When digging/holding LMB, smoothly thrust arm and drill forward towards target
@@ -76,6 +76,8 @@ public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
             poseStack.mulPose(Axis.XP.rotationDegrees(xRot));
             poseStack.mulPose(Axis.ZP.rotationDegrees(zRot));
             poseStack.scale(1.15f, 1.15f, 1.15f);
+            poseStack.last().pose().scale(-1.0f, 1.0f, 1.0f);
+            poseStack.last().normal().scale(-1.0f, 1.0f, 1.0f);
         } else if (this.renderPerspective == ItemDisplayContext.GUI) {
             // Isometric view in inventory slot
             poseStack.translate(0.0f, -0.04f, 0.0f);
@@ -95,16 +97,19 @@ public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
         super.postRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
         // Render separate drill model attached to the gauntlet emitter in first-person
         if (!isReRender) {
-            renderDrillIfActive(poseStack, animatable, bufferSource, partialTick, packedLight, packedOverlay);
+            boolean isLeftArm = this.renderPerspective == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+            renderDrillIfActive(poseStack, animatable, bufferSource, partialTick, packedLight, packedOverlay, isLeftArm);
         }
     }
 
-    private void renderDrillIfActive(PoseStack poseStack, GauntletItem animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
+    private void renderDrillIfActive(PoseStack poseStack, GauntletItem animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay, boolean isLeftArm) {
         ItemStack stack = getCurrentItemStack();
         if (stack != null && GauntletItem.isDrillActive(stack)) {
             BakedGeoModel bakedDrill = drillModel.getBakedModel(drillModel.getModelResource(animatable, this));
             if (bakedDrill != null) {
-                float angle = ClientDrillHandler.getInterpolatedAngle(partialTick);
+                float angle = isLeftArm
+                    ? ClientDrillHandler.getInterpolatedLeftAngle(partialTick)
+                    : ClientDrillHandler.getInterpolatedRightAngle(partialTick);
                 bakedDrill.getBone("drill").ifPresent(b -> b.setRotZ((float) Math.toRadians(angle)));
 
                 RenderType drillRenderType = RenderType.entityCutoutNoCull(drillModel.getTextureResource(animatable, this));
@@ -124,13 +129,13 @@ public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
         this.currentItemStack = stack;
         this.renderPerspective = ItemDisplayContext.NONE;
 
-        BakedGeoModel bakedModel = getGeoModel().getBakedModel(getGeoModel().getModelResource(this.animatable));
+        BakedGeoModel bakedModel = getGeoModel().getBakedModel(getGeoModel().getModelResource(this.animatable, this));
         RenderType renderType = getRenderType(this.animatable, getTextureLocation(this.animatable), bufferSource, partialTick);
         VertexConsumer buffer = bufferSource.getBuffer(renderType);
 
         actuallyRender(poseStack, this.animatable, bakedModel, renderType, bufferSource, buffer, false, partialTick, packedLight, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
 
         // Render separate drill model attached to the gauntlet in third-person!
-        renderDrillIfActive(poseStack, this.animatable, bufferSource, partialTick, packedLight, OverlayTexture.NO_OVERLAY);
+        renderDrillIfActive(poseStack, this.animatable, bufferSource, partialTick, packedLight, OverlayTexture.NO_OVERLAY, isLeftArm);
     }
 }

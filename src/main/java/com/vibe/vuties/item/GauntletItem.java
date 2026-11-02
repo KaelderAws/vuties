@@ -1,5 +1,6 @@
 package com.vibe.vuties.item;
 
+import com.vibe.vuties.client.ModGeoRenderProvider;
 import com.vibe.vuties.Vuties;
 import com.vibe.vuties.client.GauntletClientExtensions;
 import com.vibe.vuties.client.GauntletGeoRenderer;
@@ -40,9 +41,7 @@ public class GauntletItem extends Item implements GeoItem {
     public static final int MODE_NORMAL = 0;
     public static final int MODE_DRILL = 1;
 
-    private static final ResourceLocation ARMOR_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "gauntlet_armor");
-    private static final ResourceLocation TOUGHNESS_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "gauntlet_toughness");
-    private static final ResourceLocation KNOCKBACK_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "gauntlet_knockback_resistance");
+    private static final ResourceLocation BASE_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "gauntlet");
     private static final ResourceLocation ATTACK_DAMAGE_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "gauntlet_attack_damage");
     private static final ResourceLocation ATTACK_SPEED_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "gauntlet_attack_speed");
 
@@ -80,13 +79,11 @@ public class GauntletItem extends Item implements GeoItem {
     }
 
     public static ArmorUpgradeTier getArmorUpgrade(ItemStack stack) {
-        return stack != null ? stack.getOrDefault(ModDataComponents.UPGRADE_ARMOR.get(), ArmorUpgradeTier.NONE) : ArmorUpgradeTier.NONE;
+        return ArmorUpgradeTier.get(stack);
     }
 
     public static void setArmorUpgrade(ItemStack stack, ArmorUpgradeTier tier) {
-        if (stack != null) {
-            stack.set(ModDataComponents.UPGRADE_ARMOR.get(), tier);
-        }
+        ArmorUpgradeTier.set(stack, tier);
     }
 
     @Override
@@ -112,45 +109,23 @@ public class GauntletItem extends Item implements GeoItem {
     @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         ArmorUpgradeTier tier = getArmorUpgrade(stack);
-        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-
-        int armor = switch (tier) {
-            case IRON -> 1;
-            case DIAMOND -> 2;
-            case NETHERITE -> 3;
-            default -> 0;
-        };
-        float toughness = tier.getToughness();
-        float knockback = tier.getKnockbackResistance();
-
-        if (armor > 0) {
-            builder.add(Attributes.ARMOR,
-                    new AttributeModifier(ARMOR_MODIFIER_ID, armor, AttributeModifier.Operation.ADD_VALUE),
-                    EquipmentSlotGroup.HAND);
-        }
-
-        if (toughness > 0.0F) {
-            builder.add(Attributes.ARMOR_TOUGHNESS,
-                    new AttributeModifier(TOUGHNESS_MODIFIER_ID, toughness, AttributeModifier.Operation.ADD_VALUE),
-                    EquipmentSlotGroup.HAND);
-        }
-
-        if (knockback > 0.0F) {
-            builder.add(Attributes.KNOCKBACK_RESISTANCE,
-                    new AttributeModifier(KNOCKBACK_MODIFIER_ID, knockback, AttributeModifier.Operation.ADD_VALUE),
-                    EquipmentSlotGroup.HAND);
-        }
+        ItemAttributeModifiers modifiers = tier.createModifiers(BASE_MODIFIER_ID, EquipmentSlotGroup.HAND, tier.getGauntletArmor());
 
         if (isDrillActive(stack)) {
+            ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
+            for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
+                builder.add(entry.attribute(), entry.modifier(), entry.slot());
+            }
             builder.add(Attributes.ATTACK_DAMAGE,
                     new AttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, 8.0, AttributeModifier.Operation.ADD_VALUE),
                     EquipmentSlotGroup.MAINHAND);
             builder.add(Attributes.ATTACK_SPEED,
                     new AttributeModifier(ATTACK_SPEED_MODIFIER_ID, 1000.0, AttributeModifier.Operation.ADD_VALUE),
                     EquipmentSlotGroup.MAINHAND);
+            return builder.build();
         }
 
-        return builder.build();
+        return modifiers;
     }
 
     @Override
@@ -169,13 +144,7 @@ public class GauntletItem extends Item implements GeoItem {
         }
 
         ArmorUpgradeTier armorTier = getArmorUpgrade(stack);
-        Component armorComponent = switch (armorTier) {
-            case IRON -> Component.translatable("tooltip.vuties.gauntlet.armor_tier.iron");
-            case DIAMOND -> Component.translatable("tooltip.vuties.gauntlet.armor_tier.diamond");
-            case NETHERITE -> Component.translatable("tooltip.vuties.gauntlet.armor_tier.netherite");
-            default -> Component.translatable("tooltip.vuties.gauntlet.armor_tier.none");
-        };
-        tooltip.add(armorComponent);
+        tooltip.add(Component.translatable("tooltip.vuties.gauntlet.armor_tier." + armorTier.getSerializedName()));
 
         tooltip.add(Component.translatable("tooltip.vuties.gauntlet.controls").withStyle(ChatFormatting.GOLD));
 
@@ -196,20 +165,11 @@ public class GauntletItem extends Item implements GeoItem {
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private GauntletItemRenderer itemRenderer;
-
-            @Override
-            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
-                if (this.itemRenderer == null) {
-                    this.itemRenderer = new GauntletItemRenderer();
-                }
-                return this.itemRenderer;
-            }
-        });
+        consumer.accept(new ModGeoRenderProvider(null, GauntletItemRenderer::new));
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(GauntletClientExtensions.INSTANCE);
     }

@@ -12,6 +12,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -67,6 +70,12 @@ public class ModNetwork {
             GauntletModePayload.TYPE,
             GauntletModePayload.STREAM_CODEC,
             ModNetwork::handleGauntletMode
+        );
+
+        registrar.playToServer(
+            DrillMinePayload.TYPE,
+            DrillMinePayload.STREAM_CODEC,
+            ModNetwork::handleDrillMine
         );
     }
 
@@ -233,6 +242,27 @@ public class ModNetwork {
                     return;
                 }
                 GauntletItem.setMode(stack, payload.mode());
+            }
+        });
+    }
+
+    public static void handleDrillMine(DrillMinePayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player == null) return;
+
+            ItemStack main = player.getMainHandItem();
+            ItemStack off = player.getOffhandItem();
+            boolean hasDrill = (main.getItem() instanceof GauntletItem && GauntletItem.isDrillActive(main))
+                    || (off.getItem() instanceof GauntletItem && GauntletItem.isDrillActive(off));
+
+            if (!hasDrill) return;
+
+            BlockPos pos = payload.pos();
+            Level level = player.level();
+            BlockState state = level.getBlockState(pos);
+            if (state.getDestroySpeed(level, pos) >= 0 && player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 36.0) {
+                level.destroyBlock(pos, true, player);
             }
         });
     }

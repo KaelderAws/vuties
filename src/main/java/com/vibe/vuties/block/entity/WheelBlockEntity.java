@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.EmptyEnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,39 +49,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 public class WheelBlockEntity extends BlockEntity implements GeoBlockEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public static class WheelEnergyStorage implements IEnergyStorage {
-        @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            return 0;
-        }
 
-        @Override
-        public int extractEnergy(int maxExtract, boolean simulate) {
-            return 0;
-        }
-
-        @Override
-        public int getEnergyStored() {
-            return 0;
-        }
-
-        @Override
-        public int getMaxEnergyStored() {
-            return 0;
-        }
-
-        @Override
-        public boolean canExtract() {
-            return false;
-        }
-
-        @Override
-        public boolean canReceive() {
-            return false;
-        }
-    }
-
-    private final WheelEnergyStorage energyStorage = new WheelEnergyStorage();
 
     private boolean isRunning = false;
     private boolean isSprinting = false;
@@ -110,12 +79,12 @@ public class WheelBlockEntity extends BlockEntity implements GeoBlockEntity {
         return cache;
     }
 
-    public WheelEnergyStorage getEnergyStorage() {
-        return energyStorage;
+    public IEnergyStorage getEnergyStorage() {
+        return EmptyEnergyStorage.INSTANCE;
     }
 
     public IEnergyStorage getEnergyStorage(@Nullable Direction side) {
-        return energyStorage;
+        return EmptyEnergyStorage.INSTANCE;
     }
 
     public boolean isRunning() {

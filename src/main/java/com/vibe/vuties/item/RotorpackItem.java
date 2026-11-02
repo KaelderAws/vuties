@@ -1,5 +1,6 @@
 package com.vibe.vuties.item;
 
+import com.vibe.vuties.client.ModGeoRenderProvider;
 import com.vibe.vuties.Vuties;
 import com.vibe.vuties.client.RotorpackClientExtensions;
 import com.vibe.vuties.client.RotorpackGeoRenderer;
@@ -38,9 +39,7 @@ import java.util.function.Consumer;
 
 public class RotorpackItem extends ArmorItem implements GeoItem {
 
-    private static final ResourceLocation ARMOR_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "armor");
-    private static final ResourceLocation TOUGHNESS_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "armor_toughness");
-    private static final ResourceLocation KNOCKBACK_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "armor_knockback_resistance");
+    private static final ResourceLocation BASE_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "rotorpack");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -91,39 +90,17 @@ public class RotorpackItem extends ArmorItem implements GeoItem {
     }
 
     public static ArmorUpgradeTier getArmorUpgrade(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.UPGRADE_ARMOR.get(), ArmorUpgradeTier.NONE);
+        return ArmorUpgradeTier.get(stack);
     }
 
     public static void setArmorUpgrade(ItemStack stack, ArmorUpgradeTier tier) {
-        stack.set(ModDataComponents.UPGRADE_ARMOR.get(), tier);
+        ArmorUpgradeTier.set(stack, tier);
     }
 
     @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         ArmorUpgradeTier tier = getArmorUpgrade(stack);
-        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-
-        int armor = tier.getArmor();
-        float toughness = tier.getToughness();
-        float knockback = tier.getKnockbackResistance();
-
-        builder.add(Attributes.ARMOR,
-                new AttributeModifier(ARMOR_MODIFIER_ID, armor, AttributeModifier.Operation.ADD_VALUE),
-                EquipmentSlotGroup.CHEST);
-
-        if (toughness > 0.0F) {
-            builder.add(Attributes.ARMOR_TOUGHNESS,
-                    new AttributeModifier(TOUGHNESS_MODIFIER_ID, toughness, AttributeModifier.Operation.ADD_VALUE),
-                    EquipmentSlotGroup.CHEST);
-        }
-
-        if (knockback > 0.0F) {
-            builder.add(Attributes.KNOCKBACK_RESISTANCE,
-                    new AttributeModifier(KNOCKBACK_MODIFIER_ID, knockback, AttributeModifier.Operation.ADD_VALUE),
-                    EquipmentSlotGroup.CHEST);
-        }
-
-        return builder.build();
+        return tier.createModifiers(BASE_MODIFIER_ID, EquipmentSlotGroup.CHEST, tier.getArmor());
     }
 
     @Override
@@ -217,29 +194,11 @@ public class RotorpackItem extends ArmorItem implements GeoItem {
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private RotorpackGeoRenderer armorRenderer;
-            private RotorpackItemRenderer itemRenderer;
-
-            @Override
-            public <T extends LivingEntity> net.minecraft.client.model.HumanoidModel<?> getGeoArmorRenderer(@Nullable T livingEntity, ItemStack itemStack, @Nullable EquipmentSlot equipmentSlot, @Nullable net.minecraft.client.model.HumanoidModel<T> original) {
-                if (this.armorRenderer == null) {
-                    this.armorRenderer = new RotorpackGeoRenderer();
-                }
-                return this.armorRenderer;
-            }
-
-            @Override
-            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
-                if (this.itemRenderer == null) {
-                    this.itemRenderer = new RotorpackItemRenderer();
-                }
-                return this.itemRenderer;
-            }
-        });
+        consumer.accept(new ModGeoRenderProvider(RotorpackGeoRenderer::new, RotorpackItemRenderer::new));
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(RotorpackClientExtensions.INSTANCE);
     }

@@ -88,10 +88,6 @@ public class ClientSlideHandler {
     private static final float SLIDE_LIMB_STEP = 0.17f;
     private static float slideLimbPos = 0.0f;
 
-    // Рефлексия WalkAnimationState для управления перебором ног
-    private static Field walkPositionField = null;
-    private static Field walkSpeedOldField = null;
-    private static boolean walkFieldsInit = false;
 
     // 3D огненные следы от подошв пяток
     private static final List<SkidNode> skidNodes = new ArrayList<>();
@@ -112,28 +108,6 @@ public class ClientSlideHandler {
         }
     }
 
-    private static void initWalkFields() {
-        if (walkFieldsInit) return;
-        walkFieldsInit = true;
-        try {
-            walkPositionField = WalkAnimationState.class.getDeclaredField("position");
-            walkPositionField.setAccessible(true);
-        } catch (Exception e) {
-            Field[] fields = WalkAnimationState.class.getDeclaredFields();
-            for (Field f : fields) {
-                if (f.getType() == float.class) {
-                    f.setAccessible(true);
-                    if (walkPositionField == null && f.getName().toLowerCase().contains("pos")) {
-                        walkPositionField = f;
-                    }
-                }
-            }
-        }
-        try {
-            walkSpeedOldField = WalkAnimationState.class.getDeclaredField("speedOld");
-            walkSpeedOldField.setAccessible(true);
-        } catch (Exception ignored) {}
-    }
 
     @SubscribeEvent
     public static void onClientTickPre(ClientTickEvent.Pre event) {
@@ -504,22 +478,9 @@ public class ClientSlideHandler {
     @SubscribeEvent
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
         if (event.getEntity() instanceof Player player && SlideManager.isSliding(player)) {
-            // Плавная и непрерывная анимация ног без скачков скорости (устраняет вибрацию)
-            initWalkFields();
-            if (walkPositionField != null) {
-                try {
-                    walkPositionField.setFloat(player.walkAnimation, slideLimbPos);
-                } catch (Exception ignored) {}
-            }
-            player.walkAnimation.setSpeed(0.26f);
-            if (walkSpeedOldField != null) {
-                try {
-                    walkSpeedOldField.setFloat(player.walkAnimation, 0.26f);
-                } catch (Exception ignored) {}
-            }
+            WalkAnimHelper.setAnimation(player.walkAnimation, slideLimbPos, 0.26f);
         }
     }
-
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();

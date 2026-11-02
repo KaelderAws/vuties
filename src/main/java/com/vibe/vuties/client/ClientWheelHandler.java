@@ -32,42 +32,6 @@ public class ClientWheelHandler {
     private static boolean wasRunning = false;
     private static boolean wasSprinting = false;
 
-    private static Field walkPositionField = null;
-    private static Field walkSpeedOldField = null;
-    private static boolean walkFieldsInit = false;
-
-    private static void initWalkFields() {
-        if (walkFieldsInit) return;
-        walkFieldsInit = true;
-        try {
-            walkPositionField = WalkAnimationState.class.getDeclaredField("position");
-            walkPositionField.setAccessible(true);
-        } catch (Exception e) {
-            Field[] fields = WalkAnimationState.class.getDeclaredFields();
-            for (Field f : fields) {
-                if (f.getType() == float.class) {
-                    f.setAccessible(true);
-                    if (walkPositionField == null && f.getName().toLowerCase().contains("pos")) {
-                        walkPositionField = f;
-                    }
-                }
-            }
-        }
-        try {
-            walkSpeedOldField = WalkAnimationState.class.getDeclaredField("speedOld");
-            walkSpeedOldField.setAccessible(true);
-        } catch (Exception e) {
-            Field[] fields = WalkAnimationState.class.getDeclaredFields();
-            for (Field f : fields) {
-                if (f.getType() == float.class) {
-                    f.setAccessible(true);
-                    if (walkSpeedOldField == null && f.getName().toLowerCase().contains("old")) {
-                        walkSpeedOldField = f;
-                    }
-                }
-            }
-        }
-    }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -127,17 +91,7 @@ public class ClientWheelHandler {
             BlockPos masterPos = runner.getMasterPos();
             if (masterPos != null && entity.level().getBlockEntity(masterPos) instanceof WheelBlockEntity wheelBE) {
                 // Smooth leg animation synchronized with wheel rotation (eliminates jitter)
-                initWalkFields();
-                if (walkPositionField != null && walkSpeedOldField != null) {
-                    try {
-                        float limbSpeed = wheelBE.rotationSpeed * 0.055f;
-                        walkPositionField.setFloat(entity.walkAnimation, wheelBE.riderLimbPos);
-                        entity.walkAnimation.setSpeed(limbSpeed);
-                        walkSpeedOldField.setFloat(entity.walkAnimation, limbSpeed);
-                    } catch (Exception ignored) {}
-                } else {
-                    entity.walkAnimation.setSpeed(wheelBE.rotationSpeed * 0.055f);
-                }
+                WalkAnimHelper.setAnimation(entity.walkAnimation, wheelBE.riderLimbPos, wheelBE.rotationSpeed * 0.055f);
             }
 
             if (!(entity instanceof Player)) {

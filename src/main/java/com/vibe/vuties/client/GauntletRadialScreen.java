@@ -207,11 +207,6 @@ public class GauntletRadialScreen extends Screen {
         Matrix4f matrix = graphics.pose().last().pose();
         VertexConsumer buffer = graphics.bufferSource().getBuffer(RenderType.gui());
 
-        int aF = (argbFill >> 24) & 0xFF;
-        int rF = (argbFill >> 16) & 0xFF;
-        int gF = (argbFill >> 8) & 0xFF;
-        int bF = argbFill & 0xFF;
-
         float step = 2.0f;
 
         // 1. Fill quad strips
@@ -235,17 +230,13 @@ public class GauntletRadialScreen extends Screen {
             float x2In = cx + rIn * cos2;
             float y2In = cy + rIn * sin2;
 
-            buffer.addVertex(matrix, x1In, y1In, 0.0f).setColor(rF, gF, bF, aF);
-            buffer.addVertex(matrix, x1Out, y1Out, 0.0f).setColor(rF, gF, bF, aF);
-            buffer.addVertex(matrix, x2Out, y2Out, 0.0f).setColor(rF, gF, bF, aF);
-            buffer.addVertex(matrix, x2In, y2In, 0.0f).setColor(rF, gF, bF, aF);
+            buffer.addVertex(matrix, x1In, y1In, 0.0f).setColor(argbFill);
+            buffer.addVertex(matrix, x1Out, y1Out, 0.0f).setColor(argbFill);
+            buffer.addVertex(matrix, x2Out, y2Out, 0.0f).setColor(argbFill);
+            buffer.addVertex(matrix, x2In, y2In, 0.0f).setColor(argbFill);
         }
 
         // 2. Outer Border Arc
-        int aB = (argbBorder >> 24) & 0xFF;
-        int rB = (argbBorder >> 16) & 0xFF;
-        int gB = (argbBorder >> 8) & 0xFF;
-        int bB = argbBorder & 0xFF;
 
         float bThick = 2.0f;
         for (float deg = startDeg; deg < endDeg; deg += step) {
@@ -268,10 +259,10 @@ public class GauntletRadialScreen extends Screen {
             float x2In = cx + (rOut - bThick) * cos2;
             float y2In = cy + (rOut - bThick) * sin2;
 
-            buffer.addVertex(matrix, x1In, y1In, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x1Out, y1Out, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x2Out, y2Out, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x2In, y2In, 0.0f).setColor(rB, gB, bB, aB);
+            buffer.addVertex(matrix, x1In, y1In, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x1Out, y1Out, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x2Out, y2Out, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x2In, y2In, 0.0f).setColor(argbBorder);
         }
 
         // 3. Inner Border Arc
@@ -295,10 +286,10 @@ public class GauntletRadialScreen extends Screen {
             float x2In = cx + rIn * cos2;
             float y2In = cy + rIn * sin2;
 
-            buffer.addVertex(matrix, x1In, y1In, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x1Out, y1Out, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x2Out, y2Out, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x2In, y2In, 0.0f).setColor(rB, gB, bB, aB);
+            buffer.addVertex(matrix, x1In, y1In, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x1Out, y1Out, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x2Out, y2Out, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x2In, y2In, 0.0f).setColor(argbBorder);
         }
     }
 
@@ -308,11 +299,6 @@ public class GauntletRadialScreen extends Screen {
     private void drawFullCircle(GuiGraphics graphics, float cx, float cy, float radius, int argbFill, int argbBorder) {
         Matrix4f matrix = graphics.pose().last().pose();
         VertexConsumer buffer = graphics.bufferSource().getBuffer(RenderType.gui());
-
-        int aF = (argbFill >> 24) & 0xFF;
-        int rF = (argbFill >> 16) & 0xFF;
-        int gF = (argbFill >> 8) & 0xFF;
-        int bF = argbFill & 0xFF;
 
         float step = 5.0f;
         for (float deg = 0; deg < 360.0f; deg += step) {
@@ -325,17 +311,13 @@ public class GauntletRadialScreen extends Screen {
             float cos2 = (float) Math.cos(rad2);
             float sin2 = (float) Math.sin(rad2);
 
-            buffer.addVertex(matrix, cx, cy, 0.0f).setColor(rF, gF, bF, aF);
-            buffer.addVertex(matrix, cx + radius * cos1, cy + radius * sin1, 0.0f).setColor(rF, gF, bF, aF);
-            buffer.addVertex(matrix, cx + radius * cos2, cy + radius * sin2, 0.0f).setColor(rF, gF, bF, aF);
-            buffer.addVertex(matrix, cx, cy, 0.0f).setColor(rF, gF, bF, aF);
+            buffer.addVertex(matrix, cx, cy, 0.0f).setColor(argbFill);
+            buffer.addVertex(matrix, cx + radius * cos1, cy + radius * sin1, 0.0f).setColor(argbFill);
+            buffer.addVertex(matrix, cx + radius * cos2, cy + radius * sin2, 0.0f).setColor(argbFill);
+            buffer.addVertex(matrix, cx, cy, 0.0f).setColor(argbFill);
         }
 
         // Border ring
-        int aB = (argbBorder >> 24) & 0xFF;
-        int rB = (argbBorder >> 16) & 0xFF;
-        int gB = (argbBorder >> 8) & 0xFF;
-        int bB = argbBorder & 0xFF;
 
         float bThick = 2.0f;
         for (float deg = 0; deg < 360.0f; deg += step) {
@@ -358,10 +340,10 @@ public class GauntletRadialScreen extends Screen {
             float x2In = cx + (radius - bThick) * cos2;
             float y2In = cy + (radius - bThick) * sin2;
 
-            buffer.addVertex(matrix, x1In, y1In, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x1Out, y1Out, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x2Out, y2Out, 0.0f).setColor(rB, gB, bB, aB);
-            buffer.addVertex(matrix, x2In, y2In, 0.0f).setColor(rB, gB, bB, aB);
+            buffer.addVertex(matrix, x1In, y1In, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x1Out, y1Out, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x2Out, y2Out, 0.0f).setColor(argbBorder);
+            buffer.addVertex(matrix, x2In, y2In, 0.0f).setColor(argbBorder);
         }
     }
 

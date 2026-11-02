@@ -1,5 +1,6 @@
 package com.vibe.vuties.item;
 
+import com.vibe.vuties.client.ModGeoRenderProvider;
 import com.vibe.vuties.Vuties;
 import com.vibe.vuties.client.ExoLegsClientExtensions;
 import com.vibe.vuties.client.ExoLegsGeoRenderer;
@@ -37,9 +38,7 @@ import java.util.function.Consumer;
 
 public class ExoLegsItem extends ArmorItem implements GeoItem {
 
-    private static final ResourceLocation ARMOR_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "leggings_armor");
-    private static final ResourceLocation TOUGHNESS_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "leggings_armor_toughness");
-    private static final ResourceLocation KNOCKBACK_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "leggings_armor_knockback_resistance");
+    private static final ResourceLocation BASE_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Vuties.MODID, "leggings");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -48,13 +47,11 @@ public class ExoLegsItem extends ArmorItem implements GeoItem {
     }
 
     public static ArmorUpgradeTier getArmorUpgrade(ItemStack stack) {
-        return stack != null ? stack.getOrDefault(ModDataComponents.UPGRADE_ARMOR.get(), ArmorUpgradeTier.NONE) : ArmorUpgradeTier.NONE;
+        return ArmorUpgradeTier.get(stack);
     }
 
     public static void setArmorUpgrade(ItemStack stack, ArmorUpgradeTier tier) {
-        if (stack != null) {
-            stack.set(ModDataComponents.UPGRADE_ARMOR.get(), tier);
-        }
+        ArmorUpgradeTier.set(stack, tier);
     }
 
     public static boolean hasPhaseUpgrade(ItemStack stack) {
@@ -70,40 +67,12 @@ public class ExoLegsItem extends ArmorItem implements GeoItem {
     @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         ArmorUpgradeTier tier = getArmorUpgrade(stack);
-        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-
-        int armor = tier.getLeggingsArmor();
-        float toughness = tier.getToughness();
-        float knockback = tier.getKnockbackResistance();
-
-        builder.add(Attributes.ARMOR,
-                new AttributeModifier(ARMOR_MODIFIER_ID, armor, AttributeModifier.Operation.ADD_VALUE),
-                EquipmentSlotGroup.LEGS);
-
-        if (toughness > 0.0F) {
-            builder.add(Attributes.ARMOR_TOUGHNESS,
-                    new AttributeModifier(TOUGHNESS_MODIFIER_ID, toughness, AttributeModifier.Operation.ADD_VALUE),
-                    EquipmentSlotGroup.LEGS);
-        }
-
-        if (knockback > 0.0F) {
-            builder.add(Attributes.KNOCKBACK_RESISTANCE,
-                    new AttributeModifier(KNOCKBACK_MODIFIER_ID, knockback, AttributeModifier.Operation.ADD_VALUE),
-                    EquipmentSlotGroup.LEGS);
-        }
-
-        return builder.build();
+        return tier.createModifiers(BASE_MODIFIER_ID, EquipmentSlotGroup.LEGS, tier.getLeggingsArmor());
     }
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         ArmorUpgradeTier tier = getArmorUpgrade(stack);
-        String tierKey = switch (tier) {
-            case IRON -> "iron";
-            case DIAMOND -> "diamond";
-            case NETHERITE -> "netherite";
-            default -> "none";
-        };
 
         boolean hasPhase = hasPhaseUpgrade(stack);
         if (hasPhase) {
@@ -114,7 +83,7 @@ public class ExoLegsItem extends ArmorItem implements GeoItem {
                     .withStyle(ChatFormatting.DARK_GRAY));
         }
 
-        tooltip.add(Component.translatable("tooltip.vuties.exo_legs.armor_tier." + tierKey));
+        tooltip.add(Component.translatable("tooltip.vuties.exo_legs.armor_tier." + tier.getSerializedName()));
 
         if (hasPhase) {
             tooltip.add(Component.literal(""));
@@ -140,29 +109,11 @@ public class ExoLegsItem extends ArmorItem implements GeoItem {
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private ExoLegsGeoRenderer armorRenderer;
-            private ExoLegsItemRenderer itemRenderer;
-
-            @Override
-            public <T extends LivingEntity> HumanoidModel<?> getGeoArmorRenderer(@Nullable T livingEntity, ItemStack itemStack, @Nullable EquipmentSlot equipmentSlot, @Nullable HumanoidModel<T> original) {
-                if (this.armorRenderer == null) {
-                    this.armorRenderer = new ExoLegsGeoRenderer();
-                }
-                return this.armorRenderer;
-            }
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
-                if (this.itemRenderer == null) {
-                    this.itemRenderer = new ExoLegsItemRenderer();
-                }
-                return this.itemRenderer;
-            }
-        });
+        consumer.accept(new ModGeoRenderProvider(ExoLegsGeoRenderer::new, ExoLegsItemRenderer::new));
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(ExoLegsClientExtensions.INSTANCE);
     }

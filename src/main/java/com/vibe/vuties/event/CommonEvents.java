@@ -173,8 +173,10 @@ public class CommonEvents {
     @SubscribeEvent
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         Player player = event.getEntity();
-        ItemStack held = player.getMainHandItem();
-        if (held.getItem() instanceof GauntletItem && GauntletItem.isDrillActive(held)) {
+        ItemStack main = player.getMainHandItem();
+        boolean hasDrill = main.getItem() instanceof GauntletItem && GauntletItem.isDrillActive(main);
+
+        if (hasDrill) {
             BlockPos pos = event.getPosition().orElse(BlockPos.ZERO);
             BlockState state = event.getState();
             // Bedrock and unbreakable blocks can never be broken
@@ -191,8 +193,10 @@ public class CommonEvents {
     @SubscribeEvent
     public static void onHarvestCheck(PlayerEvent.HarvestCheck event) {
         Player player = event.getEntity();
-        ItemStack held = player.getMainHandItem();
-        if (held.getItem() instanceof GauntletItem && GauntletItem.isDrillActive(held)) {
+        ItemStack main = player.getMainHandItem();
+        boolean hasDrill = main.getItem() instanceof GauntletItem && GauntletItem.isDrillActive(main);
+
+        if (hasDrill) {
             if (event.getTargetBlock().getDestroySpeed(player.level(), BlockPos.ZERO) >= 0) {
                 event.setCanHarvest(true);
             }
