@@ -312,10 +312,10 @@ public class ClientDrillHandler {
         if (ModKeyMappings.GAUNTLET_MENU.isDown() && mc.screen == null) {
             ItemStack mainHand = player.getMainHandItem();
             ItemStack offHand = player.getOffhandItem();
-            if (mainHand.getItem() instanceof GauntletItem) {
-                mc.setScreen(new GauntletRadialScreen(InteractionHand.MAIN_HAND, mainHand));
-            } else if (offHand.getItem() instanceof GauntletItem) {
-                mc.setScreen(new GauntletRadialScreen(InteractionHand.OFF_HAND, offHand));
+            boolean hasMain = mainHand.getItem() instanceof GauntletItem;
+            boolean hasOff = offHand.getItem() instanceof GauntletItem;
+            if (hasMain || hasOff) {
+                mc.setScreen(new GauntletRadialScreen(mainHand, offHand));
             }
         }
 

@@ -16,6 +16,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
 
     private final DrillGeoModel drillModel = new DrillGeoModel();
+    private final ClawGeoModel clawModel = new ClawGeoModel();
 
     public GauntletItemRenderer() {
         super(new GauntletGeoModel());
@@ -99,6 +100,7 @@ public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
         if (!isReRender) {
             boolean isLeftArm = this.renderPerspective == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
             renderDrillIfActive(poseStack, animatable, bufferSource, partialTick, packedLight, packedOverlay, isLeftArm);
+            renderClawIfActive(poseStack, animatable, bufferSource, partialTick, packedLight, packedOverlay, isLeftArm);
         }
     }
 
@@ -120,6 +122,21 @@ public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
         }
     }
 
+    private void renderClawIfActive(PoseStack poseStack, GauntletItem animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay, boolean isLeftArm) {
+        ItemStack stack = getCurrentItemStack();
+        if (stack != null && GauntletItem.isClawActive(stack)) {
+            BakedGeoModel bakedClaw = clawModel.getBakedModel(clawModel.getModelResource(animatable, this));
+            if (bakedClaw != null) {
+                RenderType clawRenderType = RenderType.entityCutoutNoCull(clawModel.getTextureResource(animatable, this));
+                VertexConsumer clawBuffer = bufferSource.getBuffer(clawRenderType);
+
+                // Fullbright light (0x00F000F0) so energy blades always glow radiantly in darkness!
+                int emissiveLight = 0x00F000F0;
+                actuallyRender(poseStack, animatable, bakedClaw, clawRenderType, bufferSource, clawBuffer, true, partialTick, emissiveLight, packedOverlay, 0xFFFFFFFF);
+            }
+        }
+    }
+
     /**
      * Dedicated render routine used by GauntletPlayerLayer to render the glove
      * directly sleeved onto the player's hand and wrist in third person.
@@ -137,5 +154,6 @@ public class GauntletItemRenderer extends GeoItemRenderer<GauntletItem> {
 
         // Render separate drill model attached to the gauntlet in third-person!
         renderDrillIfActive(poseStack, this.animatable, bufferSource, partialTick, packedLight, OverlayTexture.NO_OVERLAY, isLeftArm);
+        renderClawIfActive(poseStack, this.animatable, bufferSource, partialTick, packedLight, OverlayTexture.NO_OVERLAY, isLeftArm);
     }
 }

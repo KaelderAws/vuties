@@ -241,6 +241,9 @@ public class ModNetwork {
                 if (payload.mode() == GauntletItem.MODE_DRILL && !GauntletItem.hasDrillUpgrade(stack)) {
                     return;
                 }
+                if (payload.mode() == GauntletItem.MODE_CLAW && !GauntletItem.hasClawUpgrade(stack)) {
+                    return;
+                }
                 GauntletItem.setMode(stack, payload.mode());
             }
         });

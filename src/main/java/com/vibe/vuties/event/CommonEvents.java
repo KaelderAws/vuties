@@ -10,11 +10,14 @@ import com.vibe.vuties.item.RotorpackItem;
 import com.vibe.vuties.logic.PhaseShiftManager;
 import com.vibe.vuties.logic.SlideManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -58,6 +61,26 @@ public class CommonEvents {
                     event.setCanceled(true);
                     player.clearFire();
                 }
+            }
+        }
+
+        // Энергетические когти экзоперчатки в основной руке
+        if (event.getSource().getEntity() instanceof Player player) {
+            ItemStack main = player.getMainHandItem();
+            if (main.getItem() instanceof GauntletItem && GauntletItem.isClawActive(main)) {
+                // 1. Срез времени неуязвимости цели для молниеносных комбо-ударов
+                event.getEntity().invulnerableTime = 2;
+
+                // 2. Бронебойный плазменный урон (+3.0 чистого урона поверх обычного)
+                event.setAmount(event.getAmount() + 3.0F);
+
+                // 3. Пробивание и отключение щитов
+                if (event.getEntity() instanceof Player targetPlayer && targetPlayer.isBlocking()) {
+                    targetPlayer.disableShield();
+                }
+
+                // 4. Плазменное прижигание
+                event.getEntity().setRemainingFireTicks(30);
             }
         }
     }
@@ -156,6 +179,19 @@ public class CommonEvents {
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
+        ItemStack offhand = player.getOffhandItem();
+        if (offhand.getItem() instanceof GauntletItem gauntlet && GauntletItem.isClawActive(offhand)) {
+            if (event.getTarget() instanceof LivingEntity target && !player.isAlliedTo(target) && !(target instanceof Villager)) {
+                ItemStack main = player.getMainHandItem();
+                if (main.isEmpty() || main.getItem() instanceof GauntletItem || main.getItem() instanceof net.minecraft.world.item.TieredItem) {
+                    gauntlet.performOffhandClawAbility(player.level(), player, offhand);
+                    event.setCancellationResult(InteractionResult.sidedSuccess(player.level().isClientSide()));
+                    event.setCanceled(true);
+                    return;
+                }
+            }
+        }
+
         if (player.isShiftKeyDown() || player.isCrouching()) {
             if (event.getTarget() instanceof Villager && event.getTarget().getVehicle() instanceof WheelRunnerEntity runner) {
                 BlockPos masterPos = runner.getMasterPos();

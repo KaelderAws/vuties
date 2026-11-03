@@ -61,6 +61,9 @@ public class ModItems {
     public static final DeferredItem<UpgradeItem> DRILL_UPGRADE = ITEMS.registerItem("drill_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.DRILL, p));
 
+    public static final DeferredItem<UpgradeItem> CLAW_UPGRADE = ITEMS.registerItem("claw_upgrade",
+        p -> new UpgradeItem(UpgradeItem.Type.CLAW, p));
+
     public static final DeferredItem<UpgradeItem> IRON_ARMOR_UPGRADE = ITEMS.registerItem("iron_armor_upgrade",
         p -> new UpgradeItem(UpgradeItem.Type.IRON_ARMOR, p));
 

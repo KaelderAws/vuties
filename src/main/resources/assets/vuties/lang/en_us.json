@@ -145,7 +145,7 @@
   "tooltip.vuties.gauntlet.armor_tier.iron": "Armor: §fIron (+1)",
   "tooltip.vuties.gauntlet.armor_tier.diamond": "Armor: §bDiamond (+2, Toughness: +1)",
   "tooltip.vuties.gauntlet.armor_tier.netherite": "Armor: §5Netherite (+3, Toughness: +2, Knockback Res: +0.05)",
-  "tooltip.vuties.gauntlet.controls": "[Alt] Mode Selection Wheel | LMB — Drill",
+  "tooltip.vuties.gauntlet.controls": "[Alt] Mode Wheel | LMB — Attack/Drill | RMB (Offhand) — AOE Cleave",
   "key.vuties.gauntlet_menu": "Gauntlet Mode Wheel",
   "gui.vuties.gauntlet_menu.title": "Gauntlet Mode Selection",
   "gui.vuties.gauntlet_menu.normal": "Normal",
@@ -157,5 +157,15 @@
   "gui.vuties.gauntlet_menu.release_hint": "[Release Alt to select]",
   "message.vuties.drill_not_installed": "§cDrill module is not installed! Install it in the Modification Station.",
   "message.vuties.gauntlet_drill_activated": "Gauntlet Mode: §aENERGY DRILL",
-  "message.vuties.gauntlet_normal_activated": "Gauntlet Mode: §bNORMAL"
+  "message.vuties.gauntlet_normal_activated": "Gauntlet Mode: §bNORMAL",
+  "item.vuties.claw_upgrade": "Energy Claw Module",
+  "tooltip.vuties.upgrade.claw.desc": "Installs twin crimson energy plasma claws into the gauntlet (X-24 prototype). Lethal melee weapon with armor penetration.",
+  "tooltip.vuties.gauntlet.mode.claw": "Mode: §cEnergy Claws (X-24)",
+  "tooltip.vuties.gauntlet.claw_installed": "Claw Module: §cINSTALLED",
+  "tooltip.vuties.gauntlet.claw_locked": "Claw Module: §8NOT INSTALLED",
+  "gui.vuties.gauntlet_menu.claw": "Claws",
+  "gui.vuties.gauntlet_menu.claw_desc": "Twin Crimson Plasma Claws (X-24)",
+  "gui.vuties.gauntlet_menu.claw_locked": "Claw module required!",
+  "message.vuties.claw_not_installed": "§cClaw module is not installed! Install it in the Modification Station.",
+  "message.vuties.gauntlet_claw_activated": "Gauntlet Mode: §cENERGY CLAWS"
 }

@@ -277,7 +277,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
         } else if (gear.getItem() instanceof ShockBootsItem) {
             return stack.is(ModItems.SLIDE_UPGRADE.get());
         } else if (gear.getItem() instanceof GauntletItem) {
-            return stack.is(ModItems.DRILL_UPGRADE.get());
+            return stack.is(ModItems.DRILL_UPGRADE.get()) || stack.is(ModItems.CLAW_UPGRADE.get());
         }
         return false;
     }
@@ -350,6 +350,9 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             if (GauntletItem.hasDrillUpgrade(gear)) {
                 this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.DRILL_UPGRADE.get()));
             }
+            if (GauntletItem.hasClawUpgrade(gear)) {
+                this.upgradesContainer.setItem(nextSlot++, new ItemStack(ModItems.CLAW_UPGRADE.get()));
+            }
         }
         populateArmorInNextSlot(ArmorUpgradeTier.get(gear), nextSlot);
 
@@ -401,6 +404,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
             boolean hasPhase = false;
             boolean hasSlide = false;
             boolean hasDrill = false;
+            boolean hasClaw = false;
             ArmorUpgradeTier armorTier = ArmorUpgradeTier.NONE;
 
             Set<String> newInstalled = new HashSet<>();
@@ -417,6 +421,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 if (stack.is(ModItems.PHASE_UPGRADE.get())) hasPhase = true;
                 if (stack.is(ModItems.SLIDE_UPGRADE.get())) hasSlide = true;
                 if (stack.is(ModItems.DRILL_UPGRADE.get())) hasDrill = true;
+                if (stack.is(ModItems.CLAW_UPGRADE.get())) hasClaw = true;
                 if (isArmorUpgradeItem(stack)) {
                     armorTier = getArmorTierFromItem(stack);
                 }
@@ -437,6 +442,7 @@ public class UpgradeTableMenu extends AbstractContainerMenu {
                 ShockBootsItem.setSlideUpgrade(gear, hasSlide);
             } else if (gear.getItem() instanceof GauntletItem) {
                 GauntletItem.setDrillUpgrade(gear, hasDrill);
+                GauntletItem.setClawUpgrade(gear, hasClaw);
             }
             ArmorUpgradeTier.set(gear, armorTier);
 

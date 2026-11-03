@@ -145,7 +145,7 @@
   "tooltip.vuties.gauntlet.armor_tier.iron": "Броня: §fЖелезная (+1)",
   "tooltip.vuties.gauntlet.armor_tier.diamond": "Броня: §bАлмазная (+2, Стойкость: +1)",
   "tooltip.vuties.gauntlet.armor_tier.netherite": "Броня: §5Незеритовая (+3, Стойкость: +2, Сопротивление: +0.05)",
-  "tooltip.vuties.gauntlet.controls": "[Alt] Кольцо выбора режима | ЛКМ — бурение",
+  "tooltip.vuties.gauntlet.controls": "[Alt] Колесо режимов | ЛКМ — Атака/Бур | ПКМ (Второй рукой) — Круговой разрез",
   "key.vuties.gauntlet_menu": "Кольцо выбора режима перчатки",
   "gui.vuties.gauntlet_menu.title": "Выбор режима перчатки",
   "gui.vuties.gauntlet_menu.normal": "Обычный",
@@ -157,5 +157,15 @@
   "gui.vuties.gauntlet_menu.release_hint": "[Отпустите Alt для выбора]",
   "message.vuties.drill_not_installed": "§cБуровой модуль не установлен! Установите его в столе улучшения.",
   "message.vuties.gauntlet_drill_activated": "Режим перчатки: §aЭНЕРГЕТИЧЕСКИЙ БУР",
-  "message.vuties.gauntlet_normal_activated": "Режим перчатки: §bОБЫЧНЫЙ"
+  "message.vuties.gauntlet_normal_activated": "Режим перчатки: §bОБЫЧНЫЙ",
+  "item.vuties.claw_upgrade": "Модуль когтей",
+  "tooltip.vuties.upgrade.claw.desc": "Устанавливает в перчатку двойные алые плазменные когти в стиле X-24. Сокрушительное оружие ближнего боя с пробиванием брони.",
+  "tooltip.vuties.gauntlet.mode.claw": "Режим: §cЭнерго-когти (X-24)",
+  "tooltip.vuties.gauntlet.claw_installed": "Модуль когтей: §cУСТАНОВЛЕН",
+  "tooltip.vuties.gauntlet.claw_locked": "Модуль когтей: §8НЕ УСТАНОВЛЕН",
+  "gui.vuties.gauntlet_menu.claw": "Когти",
+  "gui.vuties.gauntlet_menu.claw_desc": "Двойные плазменные энерго-когти (X-24)",
+  "gui.vuties.gauntlet_menu.claw_locked": "Требуется модуль когтей!",
+  "message.vuties.claw_not_installed": "§cМодуль когтей не установлен! Установите его в Станции модификаций.",
+  "message.vuties.gauntlet_claw_activated": "Режим перчатки: §cЭНЕРГО-КОГТИ"
 }

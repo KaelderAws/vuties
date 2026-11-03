@@ -36,6 +36,7 @@ public class ModCreativeTabs {
                 output.accept(ModItems.PHASE_UPGRADE.get());
                 output.accept(ModItems.SLIDE_UPGRADE.get());
                 output.accept(ModItems.DRILL_UPGRADE.get());
+                output.accept(ModItems.CLAW_UPGRADE.get());
                 output.accept(ModItems.IRON_ARMOR_UPGRADE.get());
                 output.accept(ModItems.DIAMOND_ARMOR_UPGRADE.get());
                 output.accept(ModItems.NETHERITE_ARMOR_UPGRADE.get());
